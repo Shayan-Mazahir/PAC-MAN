@@ -8,6 +8,8 @@ class GameStart {
   boolean clicked = false;
   
   // Constructor to initialize the button
+  //why do we need the PApplet? whats the use?
+  //https://processing.github.io/processing-javadocs/core/processing/core/PApplet.html
   GameStart(PApplet parent, String gifPath, String hoverImagePath) {
     // Load the GIF and hover image
     gifImage = new Gif(parent, gifPath);  // Pass parent to the Gif constructor

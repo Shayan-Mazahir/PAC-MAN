@@ -1,8 +1,11 @@
 import gifAnimation.Gif;
 
 PImage startScreen;
+PImage highScoreScreen;
 GameStart startButton;
+HighScore highScore;
 boolean gameStarted = false;
+boolean showHighScore = false; // Track if we're showing the high score screen
 
 void setup() {
   size(680, 720);
@@ -11,18 +14,33 @@ void setup() {
   // Load the start screen image
   startScreen = loadImage("../assets/start-screen.png");
   
-  // Create a GameStart object (button will be centered automatically)
+  // Load the full-screen high score image
+  highScoreScreen = loadImage("../assets/high-score.png");
+  
+  // Create a GameStart object (button)
   startButton = new GameStart(this, "../assets/start-button.gif", "../assets/start-button-2.png");
+  
+  // Create a HighScore object
+  highScore = new HighScore(this, "../assets/highscore.jpg", 10, height - 165);
 }
 
 void draw() {
-  // If game hasn't started, display the start screen
-  if (!gameStarted) {
+  if (showHighScore) {
+    // Show the full-screen high score image if high score was clicked
+    image(highScoreScreen, 0, 0, width, height);
+  } else if (!gameStarted) {
+    // Main screen before the game starts
     image(startScreen, 0, 0, width, height);
     startButton.display();
     startButton.checkClick();
-    
-    // Check if the button was clicked
+    highScore.display();
+    highScore.checkClick();
+
+    // Check if the high score image was clicked
+    if (highScore.clicked) {
+      showHighScore = true; // Switch to high score screen
+    }
+
     if (startButton.clicked) {
       gameStarted = true; // Switch to game mode
     }

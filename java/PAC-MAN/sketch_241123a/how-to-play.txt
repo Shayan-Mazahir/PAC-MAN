@@ -1,0 +1,6 @@
+How to Play!
+
+1. Use arrow keys to move.
+2. Avoid ghosts and collect dots.
+3. Power pellets let you eat ghosts for a short time.
+4. Clear all dots to win the level.

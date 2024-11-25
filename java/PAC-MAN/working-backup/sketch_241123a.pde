@@ -26,12 +26,13 @@ void setup() {
   // Create a HighScore object
   highScore = new HighScore(this, "../assets/highscore.jpg", 10, height - 165);
   
-   // Initialize FontManager with the .ttf font path and desired size
-  fontManager = new FontManager(this, "ARCADECLASSIC.TTF", 20);  
+  // Initialize FontManager with the .ttf font path and desired size
+  fontManager = new FontManager(this, "../assets/fonts/ARCADECLASSIC.TTF", 20);
+  
   // Create a HowToPlay object (positioned at the bottom-right corner)
   float howToPlayX = width - 170; // Adjust based on image width
   float howToPlayY = height - 165; // Adjust based on image height
-  howToPlay = new HowToPlay(this, "../assets/how-to-play.png", howToPlayX, howToPlayY, "assets/fonts/ARCADECLASSIC.TTF");
+  howToPlay = new HowToPlay(this, "../assets/how-to-play.png", howToPlayX, howToPlayY, fontManager, "../assets/left-arrow.png");
 }
 
 void draw() {
@@ -39,6 +40,12 @@ void draw() {
     // Show the full-screen high score image if high score was clicked
     image(highScoreScreen, 0, 0, width, height);
   } else if (showHowToPlay) {
+    // Check if the "How to Play" image itself was clicked anywhere to go back to the start screen
+    if (howToPlay.checkImageClick()) {
+      showHowToPlay = false;  // Hide the how-to-play screen
+      gameStarted = false;    // Show the start screen again
+    }
+    
     // Display the instructions from the HowToPlay object
     howToPlay.displayInstructions();
   } else if (!gameStarted) {

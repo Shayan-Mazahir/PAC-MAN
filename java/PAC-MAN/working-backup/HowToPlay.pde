@@ -1,14 +1,15 @@
 class HowToPlay {
   PApplet p;
   PImage image;
+  PImage leftArrow; // Declare the left arrow image
   float x, y;
   boolean clicked = false;
   boolean isHovered = false;
   String[] instructions; // Array to hold instructions from the text file
-  PFont customFont; // Declare a PFont variable to store the custom font
+  FontManager fontManager; // Add FontManager instance to the class
 
   // Constructor to initialize the how-to-play button
-  HowToPlay(PApplet p, String imagePath, float x, float y, String fontPath) {
+  HowToPlay(PApplet p, String imagePath, float x, float y, FontManager fontManager, String leftArrowPath) {
     this.p = p;
     this.image = p.loadImage(imagePath);
     this.x = x;
@@ -16,9 +17,12 @@ class HowToPlay {
 
     // Load the instructions from the text file
     instructions = p.loadStrings("how-to-play.txt"); // Load instructions from the file
-    
-    // Load the custom font from the TTF file
-    customFont = p.createFont(fontPath, 20); // Load the font with a default size of 20
+
+    // Use the FontManager instance passed from setup
+    this.fontManager = fontManager;
+
+    // Load the left arrow image
+    leftArrow = p.loadImage(leftArrowPath);
   }
 
   // Display the button
@@ -38,10 +42,19 @@ class HowToPlay {
     }
   }
 
-  // Display the instructions on the screen with the custom font
+  // Check if the mouse clicks anywhere on the HowToPlay image
+  boolean checkImageClick() {
+    return p.mouseX >= x && p.mouseX <= x + image.width &&
+           p.mouseY >= y && p.mouseY <= y + image.height && p.mousePressed;
+  }
+
+  // Display the instructions on the screen with styling
   void displayInstructions() {
     p.background(0);
-    p.textFont(customFont); // Apply the custom font
+    // Apply the font using the FontManager
+    fontManager.applyFont(p); // Apply the loaded font
+
+    // Set the text color
     p.fill(255, 204, 0); // Yellow text color
   
     // Display the first line of the text file separately
@@ -52,10 +65,9 @@ class HowToPlay {
     
     // Ensuring that the center and top does not continue with the rest of the text
     p.textAlign(p.LEFT, p.TOP);
-    
     // Display each line of instructions with some margin between lines
     int index = 1;
-    // Starting Y position for the text
+     // Starting Y position for the text
     float yOffset = 60;
     
     while (index < instructions.length) {
@@ -64,5 +76,16 @@ class HowToPlay {
       yOffset += 35; // Add some space between lines for clarity
       index++;
     }
+
+    // Display the left arrow at the bottom left corner
+    float arrowX = 15; // Set a little padding from the left side
+    float arrowY = p.height - leftArrow.height - 75; // Set padding from the bottom
+
+    // Set the desired size for the arrow image
+    float arrowWidth = 200;  // New width for the arrow image
+    float arrowHeight = 100; // New height for the arrow image
+
+    // Draw the left arrow with the new size
+    p.image(leftArrow, arrowX, arrowY, arrowWidth, arrowHeight); // Resize the image
   }
 }

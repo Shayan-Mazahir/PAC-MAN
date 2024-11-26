@@ -27,25 +27,33 @@ class HowToPlay {
 
   // Display the button
   void display() {
-    // Check if mouse is hovering over the button
+    // Check if mouse is hovering over the full image (the entire HowToPlay image)
     isHovered = p.mouseX >= x && p.mouseX <= x + image.width &&
                 p.mouseY >= y && p.mouseY <= y + image.height;
 
-    // Display the button image
+    // Display the HowToPlay image
     p.image(image, x, y);
   }
 
-  // Check if the button is clicked
+  // Check if the button is clicked (covering the entire image)
   void checkClick() {
     if (isHovered && p.mousePressed) {
       clicked = true;
     }
   }
 
-  // Check if the mouse clicks anywhere on the HowToPlay image
-  boolean checkImageClick() {
-    return p.mouseX >= x && p.mouseX <= x + image.width &&
-           p.mouseY >= y && p.mouseY <= y + image.height && p.mousePressed;
+  // Check if the left arrow was clicked (on the left arrow image specifically)
+  boolean checkLeftArrowClick() {
+    float arrowX = 15; // Set a little padding from the left side
+    float arrowY = p.height - leftArrow.height - 75; // Set padding from the bottom
+    float arrowWidth = 200;  // Width for the arrow image
+    float arrowHeight = 100; // Height for the arrow image
+    
+    boolean isArrowHovered = p.mouseX >= arrowX && p.mouseX <= arrowX + arrowWidth &&
+                              p.mouseY >= arrowY && p.mouseY <= arrowY + arrowHeight;
+    
+    // Check if the left arrow is clicked
+    return isArrowHovered && p.mousePressed;
   }
 
   // Display the instructions on the screen with styling
@@ -67,8 +75,7 @@ class HowToPlay {
     p.textAlign(p.LEFT, p.TOP);
     // Display each line of instructions with some margin between lines
     int index = 1;
-     // Starting Y position for the text
-    float yOffset = 60;
+    float yOffset = 60; // Starting Y position for the text
     
     while (index < instructions.length) {
       p.textSize(20);

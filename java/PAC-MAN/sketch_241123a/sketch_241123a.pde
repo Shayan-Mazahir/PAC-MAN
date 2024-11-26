@@ -5,6 +5,7 @@ PImage highScoreScreen;
 GameStart startButton;
 HighScore highScore;
 HowToPlay howToPlay;
+Game game; // Declare the Game object
 boolean gameStarted = false;
 boolean showHighScore = false;
 boolean showHowToPlay = false; // Track if we're showing the how-to-play screen
@@ -36,6 +37,9 @@ void setup() {
   float howToPlayX = width - 170; // Adjust based on image width
   float howToPlayY = height - 165; // Adjust based on image height
   howToPlay = new HowToPlay(this, "../assets/how-to-play.png", howToPlayX, howToPlayY, fontManager, "../assets/left-arrow.png");
+
+  // Initialize the Game object (don't show it yet)
+  game = new Game("maze.txt");
 }
 
 void draw() {
@@ -49,7 +53,6 @@ void draw() {
     highScore.displayRightArrow();
     highScore.checkRightArrowClick();
     if (highScore.rightArrowClicked) {
-      //println("Right-arrow clicked! Exiting high score screen."); // Debug message
       showHighScore = false;  // Return to the start screen
       lastStateChangeTime = currentTime; // Reset the timeout
       highScore.rightArrowClicked = false; // Reset the right-arrow state
@@ -103,11 +106,12 @@ void draw() {
         gameStarted = true; // Switch to game mode
         lastStateChangeTime = currentTime; // Reset the timeout
         startButton.clicked = false; // Reset the clicked state
+        //game.initialize(); // Initialize the Game here!
       }
     }
     
   } else {
-    // Game mode - set the screen to black
-    background(0);
+      background(0);
+      game.display();
   }
 }

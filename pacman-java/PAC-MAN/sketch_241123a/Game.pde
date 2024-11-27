@@ -1,3 +1,4 @@
+//need to work on this more
 class Game {
   char[][] maze; // 2D array to store the maze layout
   int cols, rows; // Number of columns and rows in the maze

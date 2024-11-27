@@ -1,0 +1,9 @@
+maze idea from:
+https://github.com/JayMcDaniel/pacman/tree/master/localhost/pacman
+https://www.reddit.com/r/processing/comments/asl6or/2player_pacman_in_p5js/
+
+maze taken from:
+https://github.com/lvisintini/pacman-maze/blob/master/maze_pattern.py
+
+worth a check:
+https://github.com/bobeff/pacman/blob/master/assets/maze.txt

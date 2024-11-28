@@ -7,3 +7,7 @@ https://github.com/lvisintini/pacman-maze/blob/master/maze_pattern.py
 
 worth a check:
 https://github.com/bobeff/pacman/blob/master/assets/maze.txt
+
+potential usage idea:
+https://www.reddit.com/r/processing/comments/1h0qwyc/comment/lzf7dyv/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+"you could make a separate imagine that's black and white, where black is the walls and white is the area pacman is allowed to move in. by drawing this onto a pgraphic, you can have an invisible layer that pacman can use to check where he's allowed to move by checking if a particular pixel relative to his position is black or white "

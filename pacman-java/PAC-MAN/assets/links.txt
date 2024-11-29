@@ -1,0 +1,3 @@
+https://pixelaholic.itch.io/pac-man-game-art
+https://stackoverflow.com/questions/622471/pacman-maze-in-java
+https://gameinternals.com/understanding-pac-man-ghost-behavior

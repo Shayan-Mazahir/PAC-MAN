@@ -1,4 +1,3 @@
-//need to work on this more
 class Game {
   char[][] maze; // 2D array to store the maze layout
   int cols, rows; // Number of columns and rows in the maze
@@ -23,12 +22,17 @@ class Game {
       }
     }
 
+    // Debug: Print the maximum length of the maze rows
+    //println("Maximum row length: " + maxLength);
+
     // Pad rows to the maximum length
     for (int i = 0; i < lines.length; i++) {
       if (lines[i].length() < maxLength) {
-        // Pad the row with spaces or walls (you can choose the padding character)
-        lines[i] = String.format("%-" + maxLength + "s", lines[i]).replace(' ', '·'); // Replace spaces with dots
+        // Pad/replace the row with spaces 
+        lines[i] = String.format("%-" + maxLength + "s", lines[i]); 
       }
+      // Debug: Print the padded row
+      //println("Row " + i + ": " + lines[i]);
     }
 
     // Now, you can safely assume all rows are of the same length
@@ -42,13 +46,13 @@ class Game {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         maze[i][j] = lines[i].charAt(j);
+        // Debug: Print each cell being loaded
+        //println("Maze[" + i + "][" + j + "]: " + maze[i][j]);
       }
     }
   }
 
-
   // Display the maze
-  // Display the maze with an offset
   void display() {
     int yOffset = 100; // Vertical offset for the maze
     int xOffset = (width - cols * cellSize) / 2; // Horizontal offset for centering
@@ -58,6 +62,9 @@ class Game {
         char cell = maze[i][j];
         float x = j * cellSize + xOffset;
         float y = i * cellSize + yOffset;
+
+        // Debug: Print the cell being drawn and its position
+        //println("Drawing cell '" + cell + "' at (" + x + ", " + y + ")");
 
         if (cell == '─') {
           // Horizontal wall with rounded edges
@@ -106,45 +113,4 @@ class Game {
       }
     }
   }
-
-
-
-
-  // Helper function to load the maze from a file
-  //String[] loadStrings(String filePath) {
-  //  // Simulating file loading in this context (for example purposes)
-  //  return new String[] {
-  //    "┌────────────┐┌────────────┐",
-  //    "│············││············│",
-  //    "│·┌──┐·┌───┐·││·┌───┐·┌──┐·│",
-  //    "│*│  │·│   │·││·│   │·│  │*│",
-  //    "│·└──┘·└───┘·└┘·└───┘·└──┘·│",
-  //    "│··························│",
-  //    "│·┌──┐·┌┐·┌──────┐·┌┐·┌──┐·│",
-  //    "│·└──┘·││·└──┐┌──┘·││·└──┘·│",
-  //    "│······││····││····││······│",
-  //    "└────┐·│└──┐ ││ ┌──┘│·┌────┘",
-  //    "     │·│┌──┘ └┘ └──┐│·│",
-  //    "     │·││    BB    ││·│",
-  //    "     │·││ ┌──══──┐ ││·│",
-  //    "─────┘·└┘ │      │ └┘·└─────",
-  //    "X     ·   │IIPPCC│   ·     X",
-  //    "─────┐·┌┐ │      │ ┌┐·┌─────",
-  //    "     │·││ └──────┘ ││·│",
-  //    "     │·││    FF    ││·│",
-  //    "     │·││ ┌──────┐ ││·│",
-  //    "┌────┘·└┘ └──┐┌──┘ └┘·└────┐",
-  //    "│············││············│",
-  //    "│·┌──┐·┌───┐·││·┌───┐·┌──┐·│",
-  //    "│·└─┐│·└───┘·└┘·└───┘·│┌─┘·│",
-  //    "│*··││·······OO·······││··*│",
-  //    "└─┐·││·┌┐·┌──────┐·┌┐·││·┌─┘",
-  //    "┌─┘·└┘·││·└──┐┌──┘·││·└┘·└─┐",
-  //    "│······││····││····││······│",
-  //    "│·┌────┘└──┐·││·┌──┘└────┐·│",
-  //    "│·└────────┘·└┘·└────────┘·│",
-  //    "│··························│",
-  //    "└──────────────────────────┘"
-  //  };
-  //}
 }

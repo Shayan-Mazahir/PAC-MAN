@@ -22,17 +22,11 @@ class Game {
       }
     }
 
-    // Debug: Print the maximum length of the maze rows
-    //println("Maximum row length: " + maxLength);
-
     // Pad rows to the maximum length
     for (int i = 0; i < lines.length; i++) {
       if (lines[i].length() < maxLength) {
-        // Pad/replace the row with spaces 
-        lines[i] = String.format("%-" + maxLength + "s", lines[i]); 
+        lines[i] = String.format("%-" + maxLength + "s", lines[i]);
       }
-      // Debug: Print the padded row
-      //println("Row " + i + ": " + lines[i]);
     }
 
     // Now, you can safely assume all rows are of the same length
@@ -46,8 +40,6 @@ class Game {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         maze[i][j] = lines[i].charAt(j);
-        // Debug: Print each cell being loaded
-        //println("Maze[" + i + "][" + j + "]: " + maze[i][j]);
       }
     }
   }
@@ -63,39 +55,32 @@ class Game {
         float x = j * cellSize + xOffset;
         float y = i * cellSize + yOffset;
 
-        // Debug: Print the cell being drawn and its position
-        //println("Drawing cell '" + cell + "' at (" + x + ", " + y + ")");
-
         if (cell == '─') {
-          // Horizontal wall with rounded edges
+          // Horizontal wall (simple straight line)
           fill(0, 0, 204); // Blue
           noStroke();
-          rect(x, y + cellSize / 4, cellSize, cellSize / 2, cellSize / 4);
+          rect(x, y + cellSize / 4, cellSize, cellSize / 2); // Straight line for horizontal walls
         } else if (cell == '│') {
-          // Vertical wall with rounded edges
+          // Vertical wall (simple straight line)
           fill(0, 0, 204); // Blue
           noStroke();
-          rect(x + cellSize / 4, y, cellSize / 2, cellSize, cellSize / 4);
-        } else if (cell == '┌') {
-          // Top-left rounded corner
+          rect(x + cellSize / 4, y, cellSize / 2, cellSize); // Straight line for vertical walls
+        } else if (cell == '┌' || cell == '┐' || cell == '└' || cell == '┘') {
+          // Corner with rounded edges using arcs
           fill(0, 0, 204); // Blue
           noStroke();
-          arc(x + cellSize, y + cellSize, cellSize * 2, cellSize * 2, PI, 3 * PI / 2);
-        } else if (cell == '┐') {
-          // Top-right rounded corner
-          fill(0, 0, 204); // Blue
-          noStroke();
-          arc(x, y + cellSize, cellSize * 2, cellSize * 2, 3 * PI / 2, TWO_PI);
-        } else if (cell == '└') {
-          // Bottom-left rounded corner
-          fill(0, 0, 204); // Blue
-          noStroke();
-          arc(x + cellSize, y, cellSize * 2, cellSize * 2, HALF_PI, PI);
-        } else if (cell == '┘') {
-          // Bottom-right rounded corner
-          fill(0, 0, 204); // Blue
-          noStroke();
-          arc(x, y, cellSize * 2, cellSize * 2, 0, HALF_PI);
+
+          // Apply arcs for the corners
+          float roundness = cellSize / 1.45; // Roundness of the corner
+          if (cell == '┌') {
+            arc(x + cellSize, y + cellSize, roundness * 2, roundness * 2, PI, 3 * PI / 2); // Top-left corner
+          } else if (cell == '┐') {
+            arc(x, y + cellSize, roundness * 2, roundness * 2, 3 * PI / 2, TWO_PI); // Top-right corner
+          } else if (cell == '└') {
+            arc(x + cellSize, y, roundness * 2, roundness * 2, HALF_PI, PI); // Bottom-left corner
+          } else if (cell == '┘') {
+            arc(x, y, roundness * 2, roundness * 2, 0, HALF_PI); // Bottom-right corner
+          }
         } else if (cell == '·') {
           // Path or pellet
           fill(255); // White
@@ -104,6 +89,13 @@ class Game {
           // Power pellet
           fill(255, 255, 0); // Yellow
           ellipse(x + cellSize / 2, y + cellSize / 2, cellSize / 2, cellSize / 2);
+        } else if (cell == 'p') {
+          // "pm" detected, draw Pac-Man as an arc
+          fill(255, 255, 0); // Yellow
+          noStroke();
+          float arcStart = 0.2 * TWO_PI;  // Pac-Man starts open
+          float arcEnd = 1.8 * TWO_PI;  // Pac-Man ends close (90% of the circle)
+          arc(x + cellSize / 2, y + cellSize / 2, cellSize, cellSize, arcStart, arcEnd);
         } else {
           // Default fill for other characters
           fill(0); // Black
@@ -112,5 +104,10 @@ class Game {
         }
       }
     }
+  }
+
+  // Update function to manage the game loop
+  void update() {
+    display(); // Draw the maze
   }
 }

@@ -14,6 +14,11 @@ class HighScore {
 
     // Load the right-arrow image
     this.rightArrow = app.loadImage(rightArrowPath);
+    
+    // Resize the right-arrow image to 200x100
+    this.rightArrow.resize(200, 100);
+
+    // Update the right-arrow position based on the new size
     this.rightArrowX = app.width - rightArrow.width - 10; // Positioned 10px from the right
     this.rightArrowY = app.height - rightArrow.height - 10; // Positioned 10px from the bottom
   }

@@ -1,7 +1,7 @@
-//importing the gif package cause processing doesnt suppor gif by default
+// Importing the gif package because Processing doesn't support gif by default
 import gifAnimation.Gif;
 
-//setting variables and objects up
+// Setting variables and objects up
 PImage startScreen;
 PImage highScoreScreen;
 GameStart startButton;
@@ -111,6 +111,11 @@ void draw() {
     }
   } else {
     background(0);
-    game.display();
+    game.update(); // Update the game, which includes moving Pac-Man and displaying the maze
   }
+}
+
+// Handle key presses to move Pac-Man
+void keyPressed() {
+  game.keyPressed(); // Pass the key event to the Game class for handling
 }

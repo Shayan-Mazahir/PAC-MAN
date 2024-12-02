@@ -1,59 +1,69 @@
-//class Movement {
-//  Game game;
-//  float x, y;
-//  int speed;
+class Movement {
+  int x, y; // Current grid position
+  char direction; // Current direction ('U', 'D', 'L', 'R')
 
-//  // Constructor to initialize Pac-Man's position and speed
-//  Movement(Game game, float x, float y, int speed) {
-//    this.game = game;
-//    this.x = x;
-//    this.y = y;
-//    this.speed = speed;
-//  }
+  Movement(int startX, int startY) {
+    this.x = startX;
+    this.y = startY;
+    this.direction = ' '; // Default: No movement
+  }
 
-//  // Move Pac-Man up
-//  void moveUp() {
-//    if (canMoveTo(x, y - speed)) {
-//      y -= speed;
-//    }
-//  }
+  // Set a new direction
+  void setDirection(char newDirection) {
+    direction = newDirection;
+  }
 
-//  // Move Pac-Man down
-//  void moveDown() {
-//    if (canMoveTo(x, y + speed)) {
-//      y += speed;
-//    }
-//  }
+  // Check if the next move is valid
+  boolean canMove(int nextX, int nextY, char[][] maze) {
+    // Ensure the next position is within bounds and not a wall
+    if (nextX < 0 || nextY < 0 || nextY >= maze.length || nextX >= maze[0].length) {
+      return false; // Out of bounds
+    }
+    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│'; // Not a wall
+  }
 
-//  // Move Pac-Man left
-//  void moveLeft() {
-//    if (canMoveTo(x - speed, y)) {
-//      x -= speed;
-//    }
-//  }
+  // Perform movement
+  void move(char[][] maze) {
+    int nextX = x, nextY = y;
 
-//  // Move Pac-Man right
-//  void moveRight() {
-//    if (canMoveTo(x + speed, y)) {
-//      x += speed;
-//    }
-//  }
+    if (direction == 'U') nextY -= 1;
+    else if (direction == 'D') nextY += 1;
+    else if (direction == 'L') nextX -= 1;
+    else if (direction == 'R') nextX += 1;
 
-//  // Check if Pac-Man can move to the new position (without colliding with walls)
-//  boolean canMoveTo(float newX, float newY) {
-//    int col = (int)(newX / game.cellSize);
-//    int row = (int)(newY / game.cellSize);
+    if (canMove(nextX, nextY, maze)) {
+      x = nextX;
+      y = nextY;
+    }
+  }
+}
 
-//    // Make sure the new position is within bounds and not a wall ('─', '│')
-//    if (row >= 0 && row < game.rows && col >= 0 && col < game.cols) {
-//      char cell = game.maze[row][col];
-//      return (cell != '─' && cell != '│');
-//    }
-//    return false;
-//  }
+//pacman
+class PacmanMovement extends Movement {
+  PacmanMovement(int startX, int startY) {
+    super(startX, startY); // Initialize Pac-Man at start position
+  }
 
-//  // Update the position of Pac-Man (called every frame)
-//  void update() {
-//    // Optional: You could add additional behavior here like animation or collision detection
-//  }
-//}
+  // Handle key presses to update direction
+  void handleInput() {
+    if (key == CODED) {
+      if (keyCode == UP) setDirection('U');
+      else if (keyCode == DOWN) setDirection('D');
+      else if (keyCode == LEFT) setDirection('L');
+      else if (keyCode == RIGHT) setDirection('R');
+      //println("Key pressed: " + key + " KeyCode: " + keyCode);
+    }
+  }
+
+  // Draw Pac-Man at the current position
+  void draw(int cellSize, int xOffset, int yOffset) {
+    float x = this.x * cellSize + xOffset;
+    float y = this.y * cellSize + yOffset;
+
+    fill(255, 255, 0); // Yellow
+    noStroke();
+    float arcStart = 0.2 * TWO_PI; // Pac-Man starts open
+    float arcEnd = 1.8 * TWO_PI; // Pac-Man ends close
+    arc(x + cellSize / 2, y + cellSize / 2, cellSize, cellSize, arcStart, arcEnd);
+  }
+}

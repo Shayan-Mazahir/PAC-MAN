@@ -38,10 +38,13 @@ class Movement {
   }
 }
 
-//pacman
+// PacmanMovement class extending Movement class
 class PacmanMovement extends Movement {
-  PacmanMovement(int startX, int startY) {
+  int moveSpeed; // Speed of movement (in pixels per frame)
+
+  PacmanMovement(int startX, int startY, int speed) {
     super(startX, startY); // Initialize Pac-Man at start position
+    this.moveSpeed = speed; // Set the movement speed
   }
 
   // Handle key presses to update direction
@@ -51,7 +54,23 @@ class PacmanMovement extends Movement {
       else if (keyCode == DOWN) setDirection('D');
       else if (keyCode == LEFT) setDirection('L');
       else if (keyCode == RIGHT) setDirection('R');
-      //println("Key pressed: " + key + " KeyCode: " + keyCode);
+    }
+  }
+
+  // Move Pac-Man based on the current direction and speed
+  void move(char[][] maze) {
+    int nextX = x, nextY = y;
+
+    if (direction == 'U') nextY -= 1;
+    else if (direction == 'D') nextY += 1;
+    else if (direction == 'L') nextX -= 1;
+    else if (direction == 'R') nextX += 1;
+
+    // Apply move speed to the position update
+    if (canMove(nextX, nextY, maze)) {
+      // Move Pac-Man based on the move speed
+      if (direction == 'U' || direction == 'D') y += moveSpeed * (nextY - y) / abs(nextY - y); // Vertical movement
+      if (direction == 'L' || direction == 'R') x += moveSpeed * (nextX - x) / abs(nextX - x); // Horizontal movement
     }
   }
 
@@ -65,5 +84,10 @@ class PacmanMovement extends Movement {
     float arcStart = 0.2 * TWO_PI; // Pac-Man starts open
     float arcEnd = 1.8 * TWO_PI; // Pac-Man ends close
     arc(x + cellSize / 2, y + cellSize / 2, cellSize, cellSize, arcStart, arcEnd);
+  }
+
+  // Set the move speed (for dynamic control)
+  void setMoveSpeed(int speed) {
+    moveSpeed = speed; // Adjust speed dynamically
   }
 }

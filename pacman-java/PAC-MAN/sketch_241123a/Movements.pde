@@ -78,6 +78,7 @@ class PacmanMovement extends Movement {
     float diameter = cellSize;
 
     // Check surrounding grid cells for wall characters
+    // Check surrounding grid cells for wall characters
     for (int offsetX = -1; offsetX <= 1; offsetX++) {
       for (int offsetY = -1; offsetY <= 1; offsetY++) {
         int checkX = gridX + offsetX;
@@ -90,14 +91,14 @@ class PacmanMovement extends Movement {
           if (maze[checkY][checkX] == '─') {
             // Horizontal wall
             float wallY = checkY * 20 + cellSize / 4;
-            if (abs(pixelY - wallY) < cellSize / 2) {
+            if (abs(pixelY - wallY) < cellSize / 2) { // Adjusted for stroke width
               wallCollision = true;
               break;
             }
           } else if (maze[checkY][checkX] == '│') {
             // Vertical wall
             float wallX = checkX * 20 + cellSize / 4;
-            if (abs(pixelX - wallX) < cellSize / 2) {
+            if (abs(pixelX - wallX) < cellSize / 2) { // Adjusted for stroke width
               wallCollision = true;
               break;
             }
@@ -142,6 +143,7 @@ class PacmanMovement extends Movement {
       }
       if (wallCollision) break;
     }
+
 
     // Revert if wall collision detected
     if (wallCollision) {

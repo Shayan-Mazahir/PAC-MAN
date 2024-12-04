@@ -4,12 +4,40 @@ class Game {
   int cellSize = 20; // Size of each cell in pixels
   PacmanMovement pacman; // Loading pacman class
 
+  int xOffset, yOffset; // Offsets to position the maze at the center bottom
+
   // Constructor to initialize the maze from a string
   Game(String mazeFilePath) {
     // Read the maze from the file
     loadMaze(mazeFilePath);
-    // Find the 'p' character in the maze to initialize Pac-Man's starting position
-    initializePacmanPosition();
+    
+    // Find Pac-Man's starting position (where "p" is)
+    int pacmanX = -1;
+    int pacmanY = -1;
+
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        if (maze[i][j] == 'p') {
+          pacmanX = j;
+          pacmanY = i;
+          break;
+        }
+      }
+      if (pacmanX != -1) {
+        break;
+      }
+    }
+
+    // If "p" is found, initialize Pac-Man's position at that point
+    if (pacmanX != -1 && pacmanY != -1) {
+      pacman = new PacmanMovement(pacmanX, pacmanY, 1);
+    } else {
+      println("Pac-Man ('p') not found in the maze!");
+    }
+    
+    // Calculate the offset to center the maze at the bottom
+    xOffset = (width - cols * cellSize) / 2; // Horizontal centering
+    yOffset = height - rows * cellSize; // Vertical alignment at the bottom
   }
 
   // Load the maze from a file
@@ -47,31 +75,13 @@ class Game {
     }
   }
 
-  // Find the starting position of Pac-Man (the letter 'p') and initialize pacman
-  void initializePacmanPosition() {
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
-        if (maze[i][j] == 'p') {
-          // Initialize Pac-Man at the position where 'p' is located
-          pacman = new PacmanMovement(j, i); // Pass column and row as the starting position
-          return; // Exit the function once we find the 'p'
-        }
-      }
-    }
-    // If no 'p' is found, initialize Pac-Man at a default position (optional)
-    pacman = new PacmanMovement(1, 1); // Default position if no 'p' is found
-  }
-
-  // Display the maze
+  // Display the maze using pixel-based coordinates
   void display() {
-    int yOffset = 100; // Vertical offset for the maze
-    int xOffset = (width - cols * cellSize) / 2; // Horizontal offset for centering
-
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         char cell = maze[i][j];
-        float x = j * cellSize + xOffset;
-        float y = i * cellSize + yOffset;
+        float x = xOffset + j * cellSize;  // X position in pixels, including offset
+        float y = yOffset + i * cellSize;  // Y position in pixels, including offset
 
         if (cell == '─') {
           // Horizontal wall (simple straight line)
@@ -131,7 +141,7 @@ class Game {
     background(0); // Clear the screen
     pacman.move(maze); // Move Pac-Man
     display(); // Redraw the maze
-    pacman.draw(cellSize, (width - cols * cellSize) / 2, 100); // Draw Pac-Man
+    pacman.draw(cellSize, xOffset, yOffset); // Draw Pac-Man in pixel-based coordinates with offset
   }
 
   void keyPressed() {

@@ -2,3 +2,4 @@ https://pixelaholic.itch.io/pac-man-game-art
 https://stackoverflow.com/questions/622471/pacman-maze-in-java
 https://gameinternals.com/understanding-pac-man-ghost-behavior
 https://github.com/PaulinaCzapla/Pacman/tree/main/Assets/Sprites
+https://www.reddit.com/r/processing/comments/b9rk37/animating_a_sprite/

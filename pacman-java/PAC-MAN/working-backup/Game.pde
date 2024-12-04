@@ -10,7 +10,7 @@ class Game {
   Game(String mazeFilePath) {
     // Read the maze from the file
     loadMaze(mazeFilePath);
-    
+
     // Find Pac-Man's starting position (where "p" is)
     int pacmanX = -1;
     int pacmanY = -1;
@@ -34,7 +34,7 @@ class Game {
     } else {
       println("Pac-Man ('p') not found in the maze!");
     }
-    
+
     // Calculate the offset to center the maze at the bottom
     xOffset = (width - cols * cellSize) / 2; // Horizontal centering
     yOffset = height - rows * cellSize; // Vertical alignment at the bottom
@@ -84,49 +84,43 @@ class Game {
         float y = yOffset + i * cellSize;  // Y position in pixels, including offset
 
         if (cell == '─') {
-          // Horizontal wall (simple straight line)
-          fill(0, 0, 204); // Blue
-          noStroke();
-          rect(x, y + cellSize / 4, cellSize, cellSize / 2); // Straight line for horizontal walls
+          // Horizontal wall using a thick line
+          stroke(0, 0, 204); // Blue color for walls
+          strokeWeight(cellSize / 2); // Thickness of the wall
+          line(x, y + cellSize / 2, x + cellSize, y + cellSize / 2); // Horizontal line
         } else if (cell == '│') {
-          // Vertical wall (simple straight line)
-          fill(0, 0, 204); // Blue
-          noStroke();
-          rect(x + cellSize / 4, y, cellSize / 2, cellSize); // Straight line for vertical walls
+          // Vertical wall using a thick line
+          stroke(0, 0, 204); // Blue color for walls
+          strokeWeight(cellSize / 2); // Thickness of the wall
+          line(x + cellSize / 2, y, x + cellSize / 2, y + cellSize); // Vertical line
         } else if (cell == '┌' || cell == '┐' || cell == '└' || cell == '┘') {
-          // Corner with rounded edges using arcs
-          fill(0, 0, 204); // Blue
-          noStroke();
+          // Corner walls using arcs
+          stroke(0, 0, 204); // Blue
+          strokeWeight(cellSize / 2); // Thickness of the arc
+          noFill(); // Only need stroke for arcs
 
-          // Apply arcs for the corners
-          float roundness = cellSize / 1.45; // Roundness of the corner
+          // Draw arcs for rounded corners
+          float roundness = 1; // Roundness of the corner
           if (cell == '┌') {
-            arc(x + cellSize, y + cellSize, roundness * 2, roundness * 2, PI, 3 * PI / 2); // Top-left corner
+            arc(x + cellSize, y + cellSize, cellSize * roundness, cellSize * roundness, PI, 3 * PI / 2); // Top-left
           } else if (cell == '┐') {
-            arc(x, y + cellSize, roundness * 2, roundness * 2, 3 * PI / 2, TWO_PI); // Top-right corner
+            arc(x, y + cellSize, cellSize * roundness, cellSize * roundness, 3 * PI / 2, TWO_PI); // Top-right
           } else if (cell == '└') {
-            arc(x + cellSize, y, roundness * 2, roundness * 2, HALF_PI, PI); // Bottom-left corner
+            arc(x + cellSize, y, cellSize * roundness, cellSize * roundness, HALF_PI, PI); // Bottom-left
           } else if (cell == '┘') {
-            arc(x, y, roundness * 2, roundness * 2, 0, HALF_PI); // Bottom-right corner
+            arc(x, y, cellSize * roundness, cellSize * roundness, 0, HALF_PI); // Bottom-right
           }
         } else if (cell == '·') {
           // Path or pellet
           fill(255); // White
+          noStroke();
           ellipse(x + cellSize / 2, y + cellSize / 2, cellSize / 4, cellSize / 4);
         } else if (cell == '*') {
           // Power pellet
           fill(255, 255, 0); // Yellow
+          noStroke();
           ellipse(x + cellSize / 2, y + cellSize / 2, cellSize / 2, cellSize / 2);
-        } 
-        //else if (cell == 'p') {
-        //  // "pm" detected, draw Pac-Man as an arc
-        //  fill(255, 255, 0); // Yellow
-        //  noStroke();
-        //  float arcStart = 0.2 * TWO_PI;  // Pac-Man starts open
-        //  float arcEnd = 1.8 * TWO_PI;  // Pac-Man ends close (90% of the circle)
-        //  arc(x + cellSize / 2, y + cellSize / 2, cellSize, cellSize, arcStart, arcEnd);
-        //} 
-        else {
+        } else {
           // Default fill for other characters
           fill(0); // Black
           noStroke();
@@ -135,6 +129,7 @@ class Game {
       }
     }
   }
+
 
   // Update function to manage the game loop
   void update() {

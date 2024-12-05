@@ -19,7 +19,7 @@ class Movement {
     if (nextX < 0 || nextY < 0 || nextY >= maze.length || nextX >= maze[0].length) {
       return false; // Out of bounds
     }
-    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│' && maze[nextY][nextX] != '┌' && maze[nextY][nextX] != '└' && maze[nextY][nextX] != '┘' && maze[nextY][nextX] != '┐'; // Not a wall
+    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│' && maze[nextY][nextX] != '┌' && maze[nextY][nextX] != '└' && maze[nextY][nextX] != '┘' && maze[nextY][nextX] != '┐' && maze[nextY][nextX] != '=' ; // Not a wall
   }
 
   // Perform movement (adjusted to pixel movement)
@@ -132,7 +132,7 @@ void move(char[][] maze) {
     if (nextX < 0 || nextY < 0 || nextY >= maze.length || nextX >= maze[0].length) {
       return false; // Out of bounds
     }
-    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│' && maze[nextY][nextX] != '┌' && maze[nextY][nextX] != '└' && maze[nextY][nextX] != '┘' && maze[nextY][nextX] != '┐'; // Not a wall
+    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│' && maze[nextY][nextX] != '┌' && maze[nextY][nextX] != '└' && maze[nextY][nextX] != '┘' && maze[nextY][nextX] != '┐' && maze[nextY][nextX] != '='; // Not a wall
   }
 
   // Snap Pac-Man's position to the center of the grid

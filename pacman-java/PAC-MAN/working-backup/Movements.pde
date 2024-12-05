@@ -19,7 +19,7 @@ class Movement {
     if (nextX < 0 || nextY < 0 || nextY >= maze.length || nextX >= maze[0].length) {
       return false; // Out of bounds
     }
-    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│'; // Not a wall
+    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│' && maze[nextY][nextX] != '┌' && maze[nextY][nextX] != '└' && maze[nextY][nextX] != '┘'; // Not a wall
   }
 
   // Perform movement (adjusted to pixel movement)
@@ -30,18 +30,20 @@ class Movement {
 
 // PacmanMovement class extending Movement class
 class PacmanMovement extends Movement {
-  float cellSize = 20.0f;
-  float pixelX, pixelY; // Precise position
+  float cellSize = 20.0f; // Size of the grid cell in pixels
+  float pixelX, pixelY; // Pacman's current pixel position
+  float targetX, targetY; // Target pixel positions
   float moveSpeed; // Speed of movement
-  float targetX, targetY; // Target pixel position
+  boolean moving; // Whether Pac-Man is moving towards a target
 
   PacmanMovement(int startX, int startY, float speed) {
     super(startX, startY);
-    this.pixelX = startX * 20; // Convert grid to pixels
-    this.pixelY = startY * 20; // Convert grid to pixels
-    this.targetX = this.pixelX;
-    this.targetY = this.pixelY;
+    this.pixelX = startX * cellSize; // Convert grid to pixels (Pac-Man's center)
+    this.pixelY = startY * cellSize; // Convert grid to pixels
+    this.targetX = pixelX;
+    this.targetY = pixelY;
     this.moveSpeed = speed;
+    this.moving = false;
   }
 
   // Handle input for direction
@@ -54,100 +56,69 @@ class PacmanMovement extends Movement {
     }
   }
 
-  // Update position, not bound to grid anymore
+  // Update position based on movement direction
   void move(char[][] maze) {
-    float prevPixelX = pixelX;
-    float prevPixelY = pixelY;
-
-    // Move Pac-Man in the direction at the desired speed
-    if (direction == 'U') pixelY -= moveSpeed;
-    else if (direction == 'D') pixelY += moveSpeed;
-    else if (direction == 'L') pixelX -= moveSpeed;
-    else if (direction == 'R') pixelX += moveSpeed;
-
-    // Bound checks remain the same
-    if (pixelX < 0) pixelX = 0;
-    if (pixelY < 0) pixelY = 0;
-    if (pixelX >= maze[0].length * 20) pixelX = maze[0].length * 20 - 1;
-    if (pixelY >= maze.length * 20) pixelY = maze.length * 20 - 1;
-
-    int gridX = (int)(pixelX / 20);
-    int gridY = (int)(pixelY / 20);
-
-    boolean wallCollision = false;
-    float diameter = cellSize;
-
-    // Check surrounding grid cells for wall characters
-    for (int offsetX = -1; offsetX <= 1; offsetX++) {
-      for (int offsetY = -1; offsetY <= 1; offsetY++) {
-        int checkX = gridX + offsetX;
-        int checkY = gridY + offsetY;
-
-        // Bound check
-        if (checkX >= 0 && checkY >= 0 &&
-          checkX < maze[0].length && checkY < maze.length) {
-
-          if (maze[checkY][checkX] == '─') {
-            // Horizontal wall
-            float wallY = checkY * 20 + cellSize / 4;
-            if (abs(pixelY - wallY) < cellSize / 2) {
-              wallCollision = true;
-              break;
-            }
-          } else if (maze[checkY][checkX] == '│') {
-            // Vertical wall
-            float wallX = checkX * 20 + cellSize / 4;
-            if (abs(pixelX - wallX) < cellSize / 2) {
-              wallCollision = true;
-              break;
-            }
-          } else if (maze[checkY][checkX] == '┌' || maze[checkY][checkX] == '┐' ||
-            maze[checkY][checkX] == '└' || maze[checkY][checkX] == '┘') {
-            // Corner collision with diameter check
-            float cornerX = checkX * 20;
-            float cornerY = checkY * 20;
-
-            // Adjust corner center based on corner type
-            if (maze[checkY][checkX] == '┌') {
-              cornerX += cellSize;
-              cornerY += cellSize;
-            } else if (maze[checkY][checkX] == '┐') {
-              cornerY += cellSize;
-            } else if (maze[checkY][checkX] == '└') {
-              cornerX += cellSize;
-            }
-
-            // Detect collision with arc region using full diameter
-            float distanceFromCenter = dist(pixelX, pixelY, cornerX, cornerY);
-
-            // If inside the rounded area using full diameter
-            if (distanceFromCenter < diameter) {
-              // Additional angle check to match arc's specific quadrant
-              float angle = atan2(pixelY - cornerY, pixelX - cornerX);
-
-              // Adjust angle check based on corner type
-              boolean angleInQuadrant = false;
-              if (maze[checkY][checkX] == '┌' && angle >= PI && angle <= 3*PI/2) angleInQuadrant = true;
-              else if (maze[checkY][checkX] == '┐' && angle >= 3*PI/2 && angle <= TWO_PI) angleInQuadrant = true;
-              else if (maze[checkY][checkX] == '└' && angle >= HALF_PI && angle <= PI) angleInQuadrant = true;
-              else if (maze[checkY][checkX] == '┘' && angle >= 0 && angle <= HALF_PI) angleInQuadrant = true;
-
-              if (angleInQuadrant) {
-                wallCollision = true;
-                break;
-              }
-            }
-          }
-        }
+    if (!moving) {
+      // If Pac-Man isn't moving, start moving in the selected direction
+      if (direction == 'U') {
+        targetX = pixelX; // Target X stays the same
+        targetY = pixelY - cellSize; // Move up to the previous row
+      } else if (direction == 'D') {
+        targetX = pixelX; // Target X stays the same
+        targetY = pixelY + cellSize; // Move down to the next row
+      } else if (direction == 'L') {
+        targetX = pixelX - cellSize; // Move left to the previous column
+        targetY = pixelY; // Target Y stays the same
+      } else if (direction == 'R') {
+        targetX = pixelX + cellSize; // Move right to the next column
+        targetY = pixelY; // Target Y stays the same
       }
-      if (wallCollision) break;
+      
+      // Check if the move is valid and update movement status
+      int gridX = (int)(targetX / cellSize);
+      int gridY = (int)(targetY / cellSize);
+      if (canMove(gridX, gridY, maze)) {
+        moving = true;
+      }
     }
 
-    // Revert if wall collision detected
-    if (wallCollision) {
-      pixelX = prevPixelX;
-      pixelY = prevPixelY;
+    // Smoothly move Pac-Man towards the target position
+    if (moving) {
+      // Move Pac-Man towards the target pixel position
+      if (abs(pixelX - targetX) > moveSpeed) {
+        pixelX += (targetX - pixelX) / abs(targetX - pixelX) * moveSpeed;
+      } else {
+        pixelX = targetX;
+      }
+
+      if (abs(pixelY - targetY) > moveSpeed) {
+        pixelY += (targetY - pixelY) / abs(targetY - pixelY) * moveSpeed;
+      } else {
+        pixelY = targetY;
+      }
+
+      // Once Pac-Man reaches the target, stop moving and snap to the grid
+      if (pixelX == targetX && pixelY == targetY) {
+        moving = false;
+        int gridX = (int)(pixelX / cellSize);
+        int gridY = (int)(pixelY / cellSize);
+        setPosition(gridX, gridY); // Snap Pac-Man to the grid center
+      }
     }
+  }
+
+  // Check if Pac-Man can move to the next grid cell
+  boolean canMove(int nextX, int nextY, char[][] maze) {
+    if (nextX < 0 || nextY < 0 || nextY >= maze.length || nextX >= maze[0].length) {
+      return false; // Out of bounds
+    }
+    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│' && maze[nextY][nextX] != '┌' && maze[nextY][nextX] != '└' && maze[nextY][nextX] != '┘'; // Not a wall
+  }
+
+  // Snap Pac-Man's position to the center of the grid
+  void setPosition(int gridX, int gridY) {
+    pixelX = gridX * cellSize;
+    pixelY = gridY * cellSize;
   }
 
   // Draw Pac-Man at the current pixel position

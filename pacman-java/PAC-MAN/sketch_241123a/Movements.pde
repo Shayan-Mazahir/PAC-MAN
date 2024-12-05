@@ -57,55 +57,75 @@ class PacmanMovement extends Movement {
   }
 
   // Update position based on movement direction
-  void move(char[][] maze) {
+void move(char[][] maze) {
+    // Default direction logic remains unchanged
     if (!moving) {
-      // If Pac-Man isn't moving, start moving in the selected direction
-      if (direction == 'U') {
-        targetX = pixelX; // Target X stays the same
-        targetY = pixelY - cellSize; // Move up to the previous row
-      } else if (direction == 'D') {
-        targetX = pixelX; // Target X stays the same
-        targetY = pixelY + cellSize; // Move down to the next row
-      } else if (direction == 'L') {
-        targetX = pixelX - cellSize; // Move left to the previous column
-        targetY = pixelY; // Target Y stays the same
-      } else if (direction == 'R') {
-        targetX = pixelX + cellSize; // Move right to the next column
-        targetY = pixelY; // Target Y stays the same
-      }
-      
-      // Check if the move is valid and update movement status
-      int gridX = (int)(targetX / cellSize);
-      int gridY = (int)(targetY / cellSize);
-      if (canMove(gridX, gridY, maze)) {
-        moving = true;
-      }
+        if (direction == 'U') {
+            targetX = pixelX; // Target X stays the same
+            targetY = pixelY - cellSize; // Move up
+        } else if (direction == 'D') {
+            targetX = pixelX; // Target X stays the same
+            targetY = pixelY + cellSize; // Move down
+        } else if (direction == 'L') {
+            targetX = pixelX - cellSize; // Move left
+            targetY = pixelY; // Target Y stays the same
+        } else if (direction == 'R') {
+            targetX = pixelX + cellSize; // Move right
+            targetY = pixelY; // Target Y stays the same
+        }
+
+        int gridX = (int)(targetX / cellSize);
+        int gridY = (int)(targetY / cellSize);
+
+        // Handle teleportation BEFORE moving (invisible to the player)
+        if (gridX < 0) {
+            gridX = maze[0].length - 1;
+            pixelX = gridX * cellSize;
+            targetX = pixelX;
+        } else if (gridX >= maze[0].length) {
+            gridX = 0;
+            pixelX = gridX * cellSize;
+            targetX = pixelX;
+        }
+        if (gridY < 0) {
+            gridY = maze.length - 1;
+            pixelY = gridY * cellSize;
+            targetY = pixelY;
+        } else if (gridY >= maze.length) {
+            gridY = 0;
+            pixelY = gridY * cellSize;
+            targetY = pixelY;
+        }
+
+        if (canMove(gridX, gridY, maze)) {
+            moving = true;
+        }
     }
 
     // Smoothly move Pac-Man towards the target position
     if (moving) {
-      // Move Pac-Man towards the target pixel position
-      if (abs(pixelX - targetX) > moveSpeed) {
-        pixelX += (targetX - pixelX) / abs(targetX - pixelX) * moveSpeed;
-      } else {
-        pixelX = targetX;
-      }
+        if (abs(pixelX - targetX) > moveSpeed) {
+            pixelX += (targetX - pixelX) / abs(targetX - pixelX) * moveSpeed;
+        } else {
+            pixelX = targetX;
+        }
 
-      if (abs(pixelY - targetY) > moveSpeed) {
-        pixelY += (targetY - pixelY) / abs(targetY - pixelY) * moveSpeed;
-      } else {
-        pixelY = targetY;
-      }
+        if (abs(pixelY - targetY) > moveSpeed) {
+            pixelY += (targetY - pixelY) / abs(targetY - pixelY) * moveSpeed;
+        } else {
+            pixelY = targetY;
+        }
 
-      // Once Pac-Man reaches the target, stop moving and snap to the grid
-      if (pixelX == targetX && pixelY == targetY) {
-        moving = false;
-        int gridX = (int)(pixelX / cellSize);
-        int gridY = (int)(pixelY / cellSize);
-        setPosition(gridX, gridY); // Snap Pac-Man to the grid center
-      }
+        // Snap to the grid center when reaching the target
+        if (pixelX == targetX && pixelY == targetY) {
+            moving = false;
+            int gridX = (int)(pixelX / cellSize);
+            int gridY = (int)(pixelY / cellSize);
+            setPosition(gridX, gridY);
+        }
     }
-  }
+}
+
 
   // Check if Pac-Man can move to the next grid cell
   boolean canMove(int nextX, int nextY, char[][] maze) {

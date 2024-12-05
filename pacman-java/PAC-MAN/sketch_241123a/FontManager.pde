@@ -1,7 +1,7 @@
 class FontManager {
   //took help from GPT and processing forms
   private PFont customFont; // Declare the font variable
-  
+
   // Constructor to load the custom font
   FontManager(PApplet p, String fontPath, float fontSize) {
     // Use createFont() to load the .ttf font with the specified size

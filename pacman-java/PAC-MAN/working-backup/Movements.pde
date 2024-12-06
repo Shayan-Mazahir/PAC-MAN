@@ -155,6 +155,10 @@ class PacmanMovement extends Movement {
   }
 
   // Draw Pac-Man at the current pixel position with animation
+  // Time-based frame switch logic
+  int lastFrameTime = 0; // Time of the last frame change (in milliseconds)
+  int frameDuration = 100; // Time (in milliseconds) between each frame change (controls speed)
+
   void draw(int cellSize, int xOffset, int yOffset) {
     float drawX = pixelX + xOffset;
     float drawY = pixelY + yOffset;
@@ -167,11 +171,14 @@ class PacmanMovement extends Movement {
     else if (direction == 'R') directionIndex = 3;
 
     if (directionIndex >= 0) {
-      frameCounter++;
-      if (frameCounter >= animationSpeed) {
-        frameCounter = 0;
+      int currentTime = millis(); // Get the current time in milliseconds
+
+      // Check if enough time has passed to switch the frame
+      if (currentTime - lastFrameTime >= frameDuration) {
         animationFrame = (animationFrame + 1) % directionImages[directionIndex].length;
+        lastFrameTime = currentTime; // Update the time of the last frame change
       }
+
       image(directionImages[directionIndex][animationFrame], drawX, drawY, cellSize, cellSize);
     } else {
       // Draw static Pac-Man if direction is undefined

@@ -1,34 +1,3 @@
-class Movement {
-  int x, y; // Current grid position
-  char direction; // Current direction ('U', 'D', 'L', 'R')
-
-  Movement(int startX, int startY) {
-    this.x = startX;
-    this.y = startY;
-    this.direction = ' '; // Default: No movement
-  }
-
-  // Set a new direction
-  void setDirection(char newDirection) {
-    direction = newDirection;
-  }
-
-  // Check if the next move is valid
-  boolean canMove(int nextX, int nextY, char[][] maze) {
-    // Ensure the next position is within bounds and not a wall
-    if (nextX < 0 || nextY < 0 || nextY >= maze.length || nextX >= maze[0].length) {
-      return false; // Out of bounds
-    }
-    return maze[nextY][nextX] != '─' && maze[nextY][nextX] != '│' && maze[nextY][nextX] != '┌' && maze[nextY][nextX] != '└' && maze[nextY][nextX] != '┘' && maze[nextY][nextX] != '┐' && maze[nextY][nextX] != '=' ; // Not a wall
-  }
-
-  // Perform movement (adjusted to pixel movement)
-  void move(char[][] maze) {
-    // Default implementation here if needed
-  }
-}
-
-// PacmanMovement class extending Movement class
 class PacmanMovement extends Movement {
   float cellSize = 20.0f; // Size of the grid cell in pixels
   float pixelX, pixelY; // Pacman's current pixel position
@@ -155,6 +124,10 @@ class PacmanMovement extends Movement {
   }
 
   // Draw Pac-Man at the current pixel position with animation
+  // Time-based frame switch logic
+  int lastFrameTime = 0; // Time of the last frame change (in milliseconds)
+  int frameDuration = 100; // Time (in milliseconds) between each frame change (controls speed)
+
   void draw(int cellSize, int xOffset, int yOffset) {
     float drawX = pixelX + xOffset;
     float drawY = pixelY + yOffset;
@@ -167,11 +140,14 @@ class PacmanMovement extends Movement {
     else if (direction == 'R') directionIndex = 3;
 
     if (directionIndex >= 0) {
-      frameCounter++;
-      if (frameCounter >= animationSpeed) {
-        frameCounter = 0;
+      int currentTime = millis(); // Get the current time in milliseconds
+
+      // Check if enough time has passed to switch the frame
+      if (currentTime - lastFrameTime >= frameDuration) {
         animationFrame = (animationFrame + 1) % directionImages[directionIndex].length;
+        lastFrameTime = currentTime; // Update the time of the last frame change
       }
+
       image(directionImages[directionIndex][animationFrame], drawX, drawY, cellSize, cellSize);
     } else {
       // Draw static Pac-Man if direction is undefined

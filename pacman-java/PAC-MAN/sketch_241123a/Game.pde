@@ -148,7 +148,7 @@ class Game {
     // Draw the back arrow at a fixed position
     float backArrowX = 10;  // Position near the top-left corner
     float backArrowY = 10;
-    image(backArrow, backArrowX, backArrowY, 50, 50);  // Adjust size as needed
+    image(backArrow, backArrowX, backArrowY, 100, 50);  // Adjust size as needed
   }
 
   void checkBackArrowClick() {

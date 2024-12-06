@@ -29,7 +29,7 @@ class HowToPlay {
   void display() {
     // Check if mouse is hovering over the full image (the entire HowToPlay image)
     isHovered = p.mouseX >= x && p.mouseX <= x + image.width &&
-                p.mouseY >= y && p.mouseY <= y + image.height;
+      p.mouseY >= y && p.mouseY <= y + image.height;
 
     // Display the HowToPlay image
     p.image(image, x, y);
@@ -48,10 +48,10 @@ class HowToPlay {
     float arrowY = p.height - leftArrow.height - 75; // Set padding from the bottom
     float arrowWidth = 200;  // Width for the arrow image
     float arrowHeight = 100; // Height for the arrow image
-    
+
     boolean isArrowHovered = p.mouseX >= arrowX && p.mouseX <= arrowX + arrowWidth &&
-                              p.mouseY >= arrowY && p.mouseY <= arrowY + arrowHeight;
-    
+      p.mouseY >= arrowY && p.mouseY <= arrowY + arrowHeight;
+
     // Check if the left arrow is clicked
     return isArrowHovered && p.mousePressed;
   }
@@ -64,19 +64,19 @@ class HowToPlay {
 
     // Set the text color
     p.fill(255, 204, 0); // Yellow text color
-  
+
     // Display the first line of the text file separately
     String first_line = instructions[0];
     p.textAlign(p.CENTER, p.TOP); // Set text alignment to center horizontally and top vertically
     p.textSize(25);
     p.text(first_line, p.width / 2, 55); // Centered horizontally, position vertically
-    
+
     // Ensuring that the center and top does not continue with the rest of the text
     p.textAlign(p.LEFT, p.TOP);
     // Display each line of instructions with some margin between lines
     int index = 1;
     float yOffset = 60; // Starting Y position for the text
-    
+
     while (index < instructions.length) {
       p.textSize(20);
       p.text(instructions[index], 50, yOffset + 40);

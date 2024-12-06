@@ -14,7 +14,7 @@ class HighScore {
 
     // Load the right-arrow image
     this.rightArrow = app.loadImage(rightArrowPath);
-    
+
     // Resize the right-arrow image to 200x100
     this.rightArrow.resize(200, 100);
 
@@ -36,8 +36,8 @@ class HighScore {
   // Check if the high score image is clicked
   void checkClick() {
     if (mouseX >= x && mouseX <= x + image.width &&
-        mouseY >= y && mouseY <= y + image.height &&
-        mousePressed) {
+      mouseY >= y && mouseY <= y + image.height &&
+      mousePressed) {
       clicked = true;
     }
   }
@@ -45,8 +45,8 @@ class HighScore {
   // Check if the right-arrow image is clicked
   void checkRightArrowClick() {
     if (mouseX >= rightArrowX && mouseX <= rightArrowX + rightArrow.width &&
-        mouseY >= rightArrowY && mouseY <= rightArrowY + rightArrow.height &&
-        mousePressed) {
+      mouseY >= rightArrowY && mouseY <= rightArrowY + rightArrow.height &&
+      mousePressed) {
       rightArrowClicked = true;
     }
   }

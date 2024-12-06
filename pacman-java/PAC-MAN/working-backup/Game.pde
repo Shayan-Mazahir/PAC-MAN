@@ -89,10 +89,10 @@ class Game {
           strokeWeight(cellSize / 2); // Thickness of the wall
           line(x, y + cellSize / 2, x + cellSize, y + cellSize / 2); // Horizontal line
         } else if (cell == '=') {
-            //Horizontal wall for the "door"
-            stroke(255, 106, 213);
-            strokeWeight(5);
-            line(x, y + cellSize / 2, x + cellSize, y + cellSize / 2);
+          //Horizontal wall for the "door"
+          stroke(255, 106, 213);
+          strokeWeight(5);
+          line(x, y + cellSize / 2, x + cellSize, y + cellSize / 2);
         } else if (cell == '│') {
           // Vertical wall using a thick line
           stroke(0, 0, 204); // Blue color for walls

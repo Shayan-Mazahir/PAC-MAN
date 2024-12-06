@@ -6,29 +6,50 @@ class Game {
   PImage backArrow;
   String mazeFile;
 
+  // Ghosts
+  GhostSprites blueGhost = new GhostSprites("blue");
+  GhostSprites redGhost = new GhostSprites("red");
+  GhostSprites pinkGhost = new GhostSprites("pink");
+  GhostSprites orangeGhost = new GhostSprites("orange");
+
+  // Ghost positions
+  PVector blueGhostPosition;
+  PVector redGhostPosition;
+  PVector pinkGhostPosition;
+  PVector orangeGhostPosition;
+
   int xOffset, yOffset; // Offsets to position the maze at the center bottom
+
+  // Frame counters for animation
+  int frameCounter = 0;
+  int animationSpeed = 10;
+  int currentFrame = 0;
 
   // Constructor to initialize the maze from a string
   Game(String mazeFilePath) {
     // Read the maze from the file
     loadMaze(mazeFilePath);
-    //Load back arrow
+    // Load back arrow
     backArrow = loadImage("../assets/left-arrow.png");
 
-    // Find Pac-Man's starting position (where "p" is)
-    int pacmanX = -1;
-    int pacmanY = -1;
+    // Find Pac-Man and ghost starting positions
+    int pacmanX = -1, pacmanY = -1;
 
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-        if (maze[i][j] == 'p') {
+        char cell = maze[i][j];
+        if (cell == 'p') {
           pacmanX = j;
           pacmanY = i;
-          break;
+        } else if (cell == 'b') {
+          blueGhostPosition = new PVector(j, i);
+        } else if (cell == 'r') {
+          redGhostPosition = new PVector(j, i);
+        } else if (cell == 'g') {
+          pinkGhostPosition = new PVector(j, i);
+        } else if (cell == 'o') {
+          orangeGhostPosition = new PVector(j, i);
         }
-      }
-      if (pacmanX != -1) {
-        break;
       }
     }
 
@@ -46,7 +67,6 @@ class Game {
 
   // Load the maze from a file
   void loadMaze(String mazeFilePath) {
-    // Read the maze text file into a string array
     String[] lines = loadStrings(mazeFilePath);
 
     // Determine the maximum length of the rows
@@ -64,14 +84,11 @@ class Game {
       }
     }
 
-    // Now, you can safely assume all rows are of the same length
     rows = lines.length;
     cols = maxLength;
-
-    // Initialize the maze array
     maze = new char[rows][cols];
 
-    // Populate the maze 2D array with characters from the text file
+    // Populate the maze 2D array
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         maze[i][j] = lines[i].charAt(j);
@@ -79,13 +96,13 @@ class Game {
     }
   }
 
-  // Display the maze using pixel-based coordinates
+  // Display the maze
   void display() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         char cell = maze[i][j];
-        float x = xOffset + j * cellSize;  // X position in pixels, including offset
-        float y = yOffset + i * cellSize;  // Y position in pixels, including offset
+        float x = xOffset + j * cellSize;
+        float y = yOffset + i * cellSize;
 
         if (cell == '─') {
           // Horizontal wall using a thick line
@@ -137,43 +154,67 @@ class Game {
         }
       }
     }
-    // Display the back arrow
     displayBackArrow();
-
-    // Check for clicks on the back arrow
     checkBackArrowClick();
   }
 
   void displayBackArrow() {
-    // Draw the back arrow at a fixed position
-    float backArrowX = 10;  // Position near the top-left corner
+    float backArrowX = 10;
     float backArrowY = 10;
-    image(backArrow, backArrowX, backArrowY, 100, 50);  // Adjust size as needed
+    image(backArrow, backArrowX, backArrowY, 100, 50);
   }
 
   void checkBackArrowClick() {
-    float backArrowX = 10;
-    float backArrowY = 10;
-    float backArrowWidth = 50;  // Match the size in displayBackArrow
-    float backArrowHeight = 50;
+    float backArrowX = 10, backArrowY = 10, backArrowWidth = 100, backArrowHeight = 50;
 
-    // Check if mouse is pressed and within the back arrow bounds
     if (mousePressed &&
       mouseX > backArrowX && mouseX < backArrowX + backArrowWidth &&
       mouseY > backArrowY && mouseY < backArrowY + backArrowHeight) {
-      gameStarted = false;  // Return to the GameStart page
+      gameStarted = false;
     }
   }
-  // Update function to manage the game loop
+
+  // Draw a ghost at a specific position
+  void drawGhost(float x, float y, char direction, int animationFrame, GhostSprites ghost) {
+    image(ghost.getSprite(direction, animationFrame), x, y, cellSize, cellSize);
+  }
+
+  // Update ghost animations
+  void updateGhostAnimation() {
+    frameCounter++;
+    if (frameCounter >= animationSpeed) {
+      frameCounter = 0;
+      currentFrame = (currentFrame + 1) % 2; // Toggle between frames
+    }
+  }
+
+  // Draw ghosts at their respective positions
+  void drawGhosts() {
+    if (blueGhostPosition != null) {
+      drawGhost(xOffset + blueGhostPosition.x * cellSize, yOffset + blueGhostPosition.y * cellSize, 'D', currentFrame, blueGhost);
+    }
+    if (redGhostPosition != null) {
+      drawGhost(xOffset + redGhostPosition.x * cellSize, yOffset + redGhostPosition.y * cellSize, 'D', currentFrame, redGhost);
+    }
+    if (pinkGhostPosition != null) {
+      drawGhost(xOffset + pinkGhostPosition.x * cellSize, yOffset + pinkGhostPosition.y * cellSize, 'D', currentFrame, pinkGhost);
+    }
+    if (orangeGhostPosition != null) {
+      drawGhost(xOffset + orangeGhostPosition.x * cellSize, yOffset + orangeGhostPosition.y * cellSize, 'D', currentFrame, orangeGhost);
+    }
+  }
+
+  // Update the game loop
   void update() {
-    background(0); // Clear the screen
-    pacman.move(maze); // Move Pac-Man
-    display(); // Redraw the maze
-    pacman.draw(cellSize, xOffset, yOffset); // Draw Pac-Man in pixel-based coordinates with offset
+    background(0);
+    pacman.move(maze);
+    display();
+    pacman.draw(cellSize, xOffset, yOffset);
+    updateGhostAnimation();
+    drawGhosts();
   }
 
   void keyPressed() {
     pacman.handleInput();
-    //println("Key pressed in Game class: " + key + ", " + keyCode);
   }
 }

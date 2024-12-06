@@ -3,6 +3,8 @@ class Game {
   int cols, rows; // Number of columns and rows in the maze
   int cellSize = 20; // Size of each cell in pixels
   PacmanMovement pacman; // Loading pacman class
+  PImage backArrow;
+  String mazeFile;
 
   int xOffset, yOffset; // Offsets to position the maze at the center bottom
 
@@ -10,6 +12,8 @@ class Game {
   Game(String mazeFilePath) {
     // Read the maze from the file
     loadMaze(mazeFilePath);
+    //Load back arrow
+    backArrow = loadImage("../assets/left-arrow.png");
 
     // Find Pac-Man's starting position (where "p" is)
     int pacmanX = -1;
@@ -133,9 +137,33 @@ class Game {
         }
       }
     }
+    // Display the back arrow
+    displayBackArrow();
+
+    // Check for clicks on the back arrow
+    checkBackArrowClick();
   }
 
+  void displayBackArrow() {
+    // Draw the back arrow at a fixed position
+    float backArrowX = 10;  // Position near the top-left corner
+    float backArrowY = 10;
+    image(backArrow, backArrowX, backArrowY, 100, 50);  // Adjust size as needed
+  }
 
+  void checkBackArrowClick() {
+    float backArrowX = 10;
+    float backArrowY = 10;
+    float backArrowWidth = 50;  // Match the size in displayBackArrow
+    float backArrowHeight = 50;
+
+    // Check if mouse is pressed and within the back arrow bounds
+    if (mousePressed &&
+      mouseX > backArrowX && mouseX < backArrowX + backArrowWidth &&
+      mouseY > backArrowY && mouseY < backArrowY + backArrowHeight) {
+      gameStarted = false;  // Return to the GameStart page
+    }
+  }
   // Update function to manage the game loop
   void update() {
     background(0); // Clear the screen

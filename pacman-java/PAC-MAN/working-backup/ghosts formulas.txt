@@ -1,0 +1,71 @@
+----used chatgpt, will confirm with a match teacher afterwards-----
+
+1. Blinky (Red Ghost) - "Chase"
+
+Blinky’s formula is relatively simple: he always chases Pac-Man, regardless of his current mode.
+Formula:
+
+    Target: (xpacman,ypacman)(xpacman​,ypacman​)
+
+    Movement: Move toward Pac-Man’s position using vector math:
+    Direction=atan2(ypacman−yblinky,xpacman−xblinky)
+    Direction=atan2(ypacman​−yblinky​,xpacman​−xblinky​)
+
+    where atan2(dy, dx) gives the angle from Blinky’s current position to Pac-Man’s position.
+
+    In Scatter Mode: Move toward the top-right corner (27, 0).
+    Target=(27,0)
+    Target=(27,0)
+
+
+2. Pinky (Pink Ghost) - "Chase (Offset)"
+
+Pinky’s behavior is to target a position ahead of Pac-Man. In Chase Mode, he targets the spot 4 tiles ahead of Pac-Man, based on Pac-Man’s current direction.
+Formula:
+
+    Target (Chase Mode):
+    Target=(xpacman+4⋅directionx,ypacman+4⋅directiony)
+    Target=(xpacman​+4⋅directionx​,ypacman​+4⋅directiony​)
+
+    where direction_x and direction_y are Pac-Man's current movement vectors.
+
+    In Scatter Mode: Move toward the top-left corner (0, 0).
+    Target=(0,0)
+    Target=(0,0)
+
+
+3. Inky (Cyan Ghost) - "Chase (Combination)"
+
+Inky’s behavior combines both Blinky’s position and a position ahead of Pac-Man, making his movement more complex.
+Formula:
+
+    Target (Chase Mode):
+    Target=(xblinky+2⋅directionx,yblinky+2⋅directiony)
+    Target=(xblinky​+2⋅directionx​,yblinky​+2⋅directiony​)
+
+    where:
+        (xblinky,yblinky)(xblinky​,yblinky​) is Blinky’s position.
+        (xpacman,ypacman)(xpacman​,ypacman​) is Pac-Man’s position.
+        The offset is based on both Blinky’s position and Pac-Man’s direction.
+
+    In Scatter Mode: Move toward the bottom-right corner (27, 31).
+    Target=(27,31)
+    Target=(27,31)
+
+
+4. Clyde (Orange Ghost) - "Chase/Scatter"
+
+Clyde behaves differently depending on how close he is to Pac-Man. When he is too close (within 8 tiles), he switches to Scatter Mode and moves toward his home corner.
+Formula:
+
+    Target (Chase Mode):
+        If distance to Pac-Man >8>8:
+        Target=(xpacman,ypacman)
+        Target=(xpacman​,ypacman​)
+        If distance to Pac-Man ≤8≤8:
+        Target=(0,31)
+        Target=(0,31)
+
+    In Scatter Mode: Move toward the bottom-left corner (0, 31).
+    Target=(0,31)
+    Target=(0,31)

@@ -41,7 +41,7 @@ void setup() {
   howToPlay = new HowToPlay(this, "../assets/how-to-play.png", howToPlayX, howToPlayY, fontManager, "../assets/left-arrow.png");
 
   // Initialize the Game object
-  game = new Game("maze.txt");
+  game = new Game(this, "maze.txt");
 }
 
 void draw() {

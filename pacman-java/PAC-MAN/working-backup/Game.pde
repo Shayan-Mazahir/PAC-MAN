@@ -5,6 +5,8 @@ class Game {
   PacmanMovement pacman; // Loading pacman class
   PImage backArrow;
   String mazeFile;
+  PacmanMovement score;
+  int currentScore;
 
   // Ghosts
   GhostSprites blueGhost = new GhostSprites("blue");
@@ -24,9 +26,15 @@ class Game {
   int frameCounter = 0;
   int animationSpeed = 10;
   int currentFrame = 0;
+  
+  FontManager fontManager;
+  PApplet app;
 
   // Constructor to initialize the maze from a string
-  Game(String mazeFilePath) {
+  Game(PApplet app, String mazeFilePath) {
+    currentScore = 0;
+    this.app = app;
+    fontManager = new FontManager(app, "../assets/fonts/ARCADECLASSIC.TTF", 24);
     // Read the maze from the file
     loadMaze(mazeFilePath);
     // Load back arrow
@@ -55,7 +63,7 @@ class Game {
 
     // If "p" is found, initialize Pac-Man's position at that point
     if (pacmanX != -1 && pacmanY != -1) {
-      pacman = new PacmanMovement(pacmanX, pacmanY, 1);
+      pacman = new PacmanMovement(pacmanX, pacmanY, 1, currentScore);
     } else {
       println("Pac-Man ('p') not found in the maze!");
     }
@@ -98,6 +106,7 @@ class Game {
 
   // Display the maze
   void display() {
+    
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         char cell = maze[i][j];
@@ -154,6 +163,12 @@ class Game {
         }
       }
     }
+        // Apply the custom font
+    fontManager.applyFont(app);
+
+    // Display high score at the top-right corner
+    fill(255); // White text color
+    text("Current Score " + currentScore, width - 450, 30); // Adjust the position as needed
     displayBackArrow();
     checkBackArrowClick();
   }
@@ -204,10 +219,12 @@ class Game {
     }
   }
 
+  //Save the high score
   // Update the game loop
   void update() {
     background(0);
     pacman.move(maze);
+  currentScore = pacman.score;      // Synchronize the score
     display();
     pacman.draw(cellSize, xOffset, yOffset);
     updateGhostAnimation();

@@ -12,7 +12,11 @@ class PacmanMovement extends Movement {
 
   int moveDelay = 5; // Number of frames to delay movement
 
-  PacmanMovement(int startX, int startY, float speed) {
+  int score = 0; // Local score
+  int gameScore; // Reference to the game's score
+
+
+  PacmanMovement(int startX, int startY, float speed, int score) {
     super(startX, startY);
     this.pixelX = startX * cellSize; // Convert grid to pixels (Pac-Man's center)
     this.pixelY = startY * cellSize; // Convert grid to pixels
@@ -20,6 +24,7 @@ class PacmanMovement extends Movement {
     this.targetY = pixelY;
     this.moveSpeed = speed;
     this.moving = false;
+    this.gameScore = gameScore;
 
     // Load images for all directions
     directionImages = new PImage[4][2]; // [direction][frame]
@@ -43,7 +48,7 @@ class PacmanMovement extends Movement {
     }
   }
 
-  // Update position based on movement direction
+  // Update position based on movement direction and check for food
   void move(char[][] maze) {
     if (!moving) {
       if (direction == 'U') {
@@ -85,6 +90,14 @@ class PacmanMovement extends Movement {
 
       if (canMove(gridX, gridY, maze)) {
         moving = true;
+
+        // Check for food at the new position
+        if (maze[gridY][gridX] == '·') {
+          maze[gridY][gridX] = ' '; // Remove the food from the maze
+          score += 10; // Increment the score
+          gameScore = score;
+          // Sounds here
+        }
       }
     }
 

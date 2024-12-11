@@ -32,7 +32,7 @@ class Game {
 
   // READY! screen variables
   boolean showReadyScreen = true;
-  int readyScreenDuration = 3000; // Duration in milliseconds
+  int readyScreenDuration = 2000; // Duration in milliseconds
   int readyStartTime;
 
   // Constructor to initialize the maze from a string

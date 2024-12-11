@@ -26,9 +26,14 @@ class Game {
   int frameCounter = 0;
   int animationSpeed = 10;
   int currentFrame = 0;
-  
+
   FontManager fontManager;
   PApplet app;
+
+  // READY! screen variables
+  boolean showReadyScreen = true;
+  int readyScreenDuration = 3000; // Duration in milliseconds
+  int readyStartTime;
 
   // Constructor to initialize the maze from a string
   Game(PApplet app, String mazeFilePath) {
@@ -71,6 +76,9 @@ class Game {
     // Calculate the offset to center the maze at the bottom
     xOffset = (width - cols * cellSize) / 2; // Horizontal centering
     yOffset = height - rows * cellSize; // Vertical alignment at the bottom
+
+    // Record the start time for the "READY!" screen
+    readyStartTime = millis();
   }
 
   // Load the maze from a file
@@ -104,9 +112,17 @@ class Game {
     }
   }
 
+  // Display the "READY!" screen
+  void displayReadyScreen() {
+    background(0);
+    fontManager.applyFont(app);
+    fill(255, 255, 0); // Yellow color for "READY!"
+    textAlign(CENTER, CENTER);
+    text("READY!", width / 2, height / 2);
+  }
+
   // Display the maze
   void display() {
-    
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         char cell = maze[i][j];
@@ -163,13 +179,13 @@ class Game {
         }
       }
     }
-        // Apply the custom font
+
     fontManager.applyFont(app);
 
     // Display high score at the top-right corner
     fill(255); // White text color
-    text("Current Score " + currentScore, width - 450, 30); // Adjust the position as needed
-    displayBackArrow();
+    text("Current Score " + currentScore, width / 2, 30); // Adjust the position as needed
+   displayBackArrow();
     checkBackArrowClick();
   }
 
@@ -219,16 +235,25 @@ class Game {
     }
   }
 
-  //Save the high score
-  // Update the game loop
   void update() {
-    background(0);
-    pacman.move(maze);
-  currentScore = pacman.score;      // Synchronize the score
-    display();
-    pacman.draw(cellSize, xOffset, yOffset);
-    updateGhostAnimation();
-    drawGhosts();
+
+    if (showReadyScreen) {
+      displayReadyScreen();
+      if (millis() - readyStartTime > readyScreenDuration) {
+        showReadyScreen = false; // Transition to game after delay
+      }
+    } else {
+
+      background(0);
+      pacman.move(maze);
+      currentScore = pacman.score;
+      currentScore = pacman.score;      // Synchronize the score
+      display();
+      pacman.draw(cellSize, xOffset, yOffset);
+      updateGhostAnimation();
+      drawGhosts();
+      drawGhosts();
+    }
   }
 
   void keyPressed() {

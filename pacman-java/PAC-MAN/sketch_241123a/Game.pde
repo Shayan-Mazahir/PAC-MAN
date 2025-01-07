@@ -211,6 +211,7 @@ class Game {
   }
 
   // Update ghost animations
+
   void updateGhostAnimation() {
     frameCounter++;
     if (frameCounter >= animationSpeed) {

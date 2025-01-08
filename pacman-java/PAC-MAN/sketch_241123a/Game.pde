@@ -121,6 +121,210 @@ class Game {
     text("READY!", width / 2, height / 2);
   }
 
+    //ghost movement
+// Add these methods to your Game class
+
+// Calculate distance between two points
+float distanceBetween(PVector p1, PVector p2) {
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+// Get Pac-Man's current position as a PVector
+PVector getPacmanPosition() {
+    return new PVector(pacman.x, pacman.y);
+}
+
+// Red Ghost (Blinky) - Direct chase
+void moveRedGhost() {
+    if (redGhostPosition == null) return;
+    
+    PVector pacmanPos = getPacmanPosition();
+    float shortestDistance = Float.MAX_VALUE;
+    char bestDirection = 'N';
+    
+    // Check each possible direction
+    char[] directions = {'U', 'D', 'L', 'R'};
+    for (char dir : directions) {
+        PVector testPos = redGhostPosition.copy();
+        if (dir == 'U') testPos.y--;
+        if (dir == 'D') testPos.y++;
+        if (dir == 'L') testPos.x--;
+        if (dir == 'R') testPos.x++;
+        
+        if (canGhostMove(redGhostPosition, maze, dir)) {
+            float distance = distanceBetween(testPos, pacmanPos);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                bestDirection = dir;
+            }
+        }
+    }
+    
+    // Move in the best direction
+    if (bestDirection == 'U') redGhostPosition.y--;
+    if (bestDirection == 'D') redGhostPosition.y++;
+    if (bestDirection == 'L') redGhostPosition.x--;
+    if (bestDirection == 'R') redGhostPosition.x++;
+}
+
+// Pink Ghost (Pinky) - Ambush 4 tiles ahead
+void movePinkGhost() {
+    if (pinkGhostPosition == null) return;
+    
+    // Target 4 tiles ahead of Pac-Man
+    PVector pacmanPos = getPacmanPosition();
+    PVector targetPos = pacmanPos.copy();
+    
+    // Adjust target based on Pac-Man's direction
+    if (pacman.direction == 'U') targetPos.y -= 4;
+    if (pacman.direction == 'D') targetPos.y += 4;
+    if (pacman.direction == 'L') targetPos.x -= 4;
+    if (pacman.direction == 'R') targetPos.x += 4;
+    
+    // Find best direction to reach target
+    float shortestDistance = Float.MAX_VALUE;
+    char bestDirection = 'N';
+    
+    char[] directions = {'U', 'D', 'L', 'R'};
+    for (char dir : directions) {
+        PVector testPos = pinkGhostPosition.copy();
+        if (dir == 'U') testPos.y--;
+        if (dir == 'D') testPos.y++;
+        if (dir == 'L') testPos.x--;
+        if (dir == 'R') testPos.x++;
+        
+        if (canGhostMove(pinkGhostPosition, maze, dir)) {
+            float distance = distanceBetween(testPos, targetPos);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                bestDirection = dir;
+            }
+        }
+    }
+    
+    // Move in the best direction
+    if (bestDirection == 'U') pinkGhostPosition.y--;
+    if (bestDirection == 'D') pinkGhostPosition.y++;
+    if (bestDirection == 'L') pinkGhostPosition.x--;
+    if (bestDirection == 'R') pinkGhostPosition.x++;
+}
+
+// Blue Ghost (Inky) - Uses Blinky's position
+void moveBlueGhost() {
+    if (blueGhostPosition == null || redGhostPosition == null) return;
+    
+    PVector pacmanPos = getPacmanPosition();
+    
+    // Calculate target position (vector from Blinky to 2 tiles ahead of Pac-Man)
+    PVector targetPos = pacmanPos.copy();
+    if (pacman.direction == 'U') targetPos.y -= 2;
+    if (pacman.direction == 'D') targetPos.y += 2;
+    if (pacman.direction == 'L') targetPos.x -= 2;
+    if (pacman.direction == 'R') targetPos.x += 2;
+    
+    // Double the vector from Blinky to target
+    targetPos.x = targetPos.x + (targetPos.x - redGhostPosition.x);
+    targetPos.y = targetPos.y + (targetPos.y - redGhostPosition.y);
+    
+    // Find best direction to reach target
+    float shortestDistance = Float.MAX_VALUE;
+    char bestDirection = 'N';
+    
+    char[] directions = {'U', 'D', 'L', 'R'};
+    for (char dir : directions) {
+        PVector testPos = blueGhostPosition.copy();
+        if (dir == 'U') testPos.y--;
+        if (dir == 'D') testPos.y++;
+        if (dir == 'L') testPos.x--;
+        if (dir == 'R') testPos.x++;
+        
+        if (canGhostMove(blueGhostPosition, maze, dir)) {
+            float distance = distanceBetween(testPos, targetPos);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                bestDirection = dir;
+            }
+        }
+    }
+    
+    // Move in the best direction
+    if (bestDirection == 'U') blueGhostPosition.y--;
+    if (bestDirection == 'D') blueGhostPosition.y++;
+    if (bestDirection == 'L') blueGhostPosition.x--;
+    if (bestDirection == 'R') blueGhostPosition.x++;
+}
+
+// Orange Ghost (Clyde) - Scatter/Chase behavior
+void moveOrangeGhost() {
+    if (orangeGhostPosition == null) return;
+    
+    PVector pacmanPos = getPacmanPosition();
+    float distanceToPacman = distanceBetween(orangeGhostPosition, pacmanPos);
+    
+    // If closer than 8 tiles to Pac-Man, run away to scatter corner
+    PVector targetPos = distanceToPacman < 8 ? 
+        new PVector(0, rows-1) : // Bottom-left corner when scattering
+        pacmanPos; // Chase Pac-Man when far
+    
+    float shortestDistance = Float.MAX_VALUE;
+    char bestDirection = 'N';
+    
+    char[] directions = {'U', 'D', 'L', 'R'};
+    for (char dir : directions) {
+        PVector testPos = orangeGhostPosition.copy();
+        if (dir == 'U') testPos.y--;
+        if (dir == 'D') testPos.y++;
+        if (dir == 'L') testPos.x--;
+        if (dir == 'R') testPos.x++;
+        
+        if (canGhostMove(orangeGhostPosition, maze, dir)) {
+            float distance = distanceBetween(testPos, targetPos);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                bestDirection = dir;
+            }
+        }
+    }
+    
+    // Move in the best direction
+    if (bestDirection == 'U') orangeGhostPosition.y--;
+    if (bestDirection == 'D') orangeGhostPosition.y++;
+    if (bestDirection == 'L') orangeGhostPosition.x--;
+    if (bestDirection == 'R') orangeGhostPosition.x++;
+}
+
+// Replace the moveGhostRandomly calls in the update() method with:
+void updateGhosts() {
+    moveRedGhost();
+    movePinkGhost();
+    moveBlueGhost();
+    moveOrangeGhost();
+}
+
+boolean canGhostMove(PVector position, char[][] maze, char direction) {
+    // Calculate the target position based on the current position and direction
+    int newX = (int) position.x;
+    int newY = (int) position.y;
+    
+    // Adjust coordinates based on direction
+    switch(direction) {
+        case 'U': newY--; break;
+        case 'D': newY++; break;
+        case 'L': newX--; break;
+        case 'R': newX++; break;
+    }
+    
+    // Check if the new position is within maze bounds
+    if (newX < 0 || newX >= maze[0].length || newY < 0 || newY >= maze.length) {
+        return false;
+    }
+    
+    // List of characters that represent walls or barriers
+    char cell = maze[newY][newX];
+    return cell != '─' && cell != '│' && cell != '┌' && cell != '┐' 
+           && cell != '└' && cell != '┘' && cell != '=';
+}
+
   // Display the maze
   void display() {
     for (int i = 0; i < rows; i++) {
@@ -249,6 +453,8 @@ class Game {
       pacman.move(maze);
       currentScore = pacman.score;
       currentScore = pacman.score;      // Synchronize the score
+      // Move ghosts randomly
+      updateGhosts();
       display();
       pacman.draw(cellSize, xOffset, yOffset);
       updateGhostAnimation();

@@ -128,17 +128,19 @@ class Game {
         char cell = maze[i][j];
         float x = xOffset + j * cellSize;
         float y = yOffset + i * cellSize;
-
-        if (cell == '─') {
-          // Horizontal wall using a thick line
-          stroke(0, 0, 204); // Blue color for walls
-          strokeWeight(cellSize / 2); // Thickness of the wall
-          line(x, y + cellSize / 2, x + cellSize, y + cellSize / 2); // Horizontal line
-        } else if (cell == '=') {
+  
+        
+        if (cell == '=') {
           //Horizontal wall for the "door"
           stroke(255, 106, 213);
           strokeWeight(5);
           line(x, y + cellSize / 2, x + cellSize, y + cellSize / 2);
+        }
+        else if (cell == '─') {
+          // Horizontal wall using a thick line
+          stroke(0, 0, 204); // Blue color for walls
+          strokeWeight(cellSize / 2); // Thickness of the wall
+          line(x, y + cellSize / 2, x + cellSize, y + cellSize / 2); // Horizontal line
         } else if (cell == '│') {
           // Vertical wall using a thick line
           stroke(0, 0, 204); // Blue color for walls
@@ -205,6 +207,47 @@ class Game {
     }
   }
 
+  //ghosts
+  // In Game class: Add this to update Blinky's movement
+void moveRedGhost() {
+  if (redGhostPosition != null && pacman != null) {
+    int targetX = pacman.x; // Pac-Man's current column
+    int targetY = pacman.y; // Pac-Man's current row
+
+    // Calculate the direction to move closer to Pac-Man
+    PVector bestMove = null;
+    float shortestDistance = Float.MAX_VALUE;
+
+    // Define possible moves: up, down, left, right
+    PVector[] moves = {
+      new PVector(redGhostPosition.x, redGhostPosition.y - 1), // Up
+      new PVector(redGhostPosition.x, redGhostPosition.y + 1), // Down
+      new PVector(redGhostPosition.x - 1, redGhostPosition.y), // Left
+      new PVector(redGhostPosition.x + 1, redGhostPosition.y)  // Right
+    };
+
+    for (PVector move : moves) {
+      int moveX = (int) move.x;
+      int moveY = (int) move.y;
+
+      // Check if the move is valid (not a wall or out of bounds)
+      if (moveX >= 0 && moveX < cols && moveY >= 0 && moveY < rows && maze[moveY][moveX] != '│' && maze[moveY][moveX] != '─') {
+        // Calculate distance to Pac-Man
+        float distance = dist(moveX, moveY, targetX, targetY);
+        if (distance < shortestDistance) {
+          shortestDistance = distance;
+          bestMove = move;
+        }
+      }
+    }
+
+    // Update red ghost position to the best move
+    if (bestMove != null) {
+      redGhostPosition.x = bestMove.x;
+      redGhostPosition.y = bestMove.y;
+    }
+  }
+}
   // Draw a ghost at a specific position
   void drawGhost(float x, float y, char direction, int animationFrame, GhostSprites ghost) {
     image(ghost.getSprite(direction, animationFrame), x, y, cellSize, cellSize);
@@ -250,8 +293,9 @@ class Game {
       currentScore = pacman.score;      // Synchronize the score
       display();
       pacman.draw(cellSize, xOffset, yOffset);
+      moveRedGhost(); // Move the red ghost
       updateGhostAnimation();
-      drawGhosts();
+      //drawGhosts();
       drawGhosts();
     }
   }

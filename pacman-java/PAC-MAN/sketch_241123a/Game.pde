@@ -207,78 +207,78 @@ class Game {
   }
 
   //ghosts
-int ghostSpeed = 4; // Adjust this to control speed
-int ghostMoveCounter = 0; // Counter to slow down ghost movement
-PVector redGhostDirection = new PVector(0, 0); // Current movement direction
+  int ghostSpeed = 4; // Adjust this to control speed
+  int ghostMoveCounter = 0; // Counter to slow down ghost movement
+  PVector redGhostDirection = new PVector(0, 0); // Current movement direction
 
-void moveRedGhost() {
-  ghostMoveCounter++;
-  if (ghostMoveCounter % ghostSpeed != 0) {
-    return; // Skip movement update to control speed
-  }
-
-  if (redGhostPosition != null && pacman != null) {
-    int targetX = pacman.x; // Pac-Man's target position (grid coordinates)
-    int targetY = pacman.y;
-
-    // Check if Blinky is at an intersection or dead end
-    PVector[] possibleMoves = getValidMoves(redGhostPosition);
-    if (possibleMoves.length > 2 || possibleMoves.length == 1) {
-      // Make a decision at an intersection or dead end
-      PVector bestMove = null;
-      float shortestDistance = Float.MAX_VALUE;
-
-      for (PVector move : possibleMoves) {
-        int moveX = (int) (redGhostPosition.x + move.x);
-        int moveY = (int) (redGhostPosition.y + move.y);
-
-        // Avoid reversing direction unless necessary
-        if (redGhostDirection != null && move.x == -redGhostDirection.x && move.y == -redGhostDirection.y) {
-          continue;
-        }
-
-        // Calculate distance to Pac-Man
-        float distance = dist(moveX, moveY, targetX, targetY);
-        if (distance < shortestDistance) {
-          shortestDistance = distance;
-          bestMove = move;
-        }
-      }
-
-      // Update direction and position if a valid move is found
-      if (bestMove != null) {
-        redGhostDirection = bestMove; // Update direction
-        redGhostPosition.add(bestMove); // Move ghost
-      }
-    } else if (possibleMoves.length == 2) {
-      // Continue in current direction if not at an intersection
-      redGhostPosition.add(redGhostDirection);
+  void moveRedGhost() {
+    ghostMoveCounter++;
+    if (ghostMoveCounter % ghostSpeed != 0) {
+      return; // Skip movement update to control speed
     }
-  }
-}
 
-// Helper: Get all valid moves from the current position
-PVector[] getValidMoves(PVector position) {
-  PVector[] moves = {
-    new PVector(0, -1), // Up
-    new PVector(0, 1),  // Down
-    new PVector(-1, 0), // Left
-    new PVector(1, 0)   // Right
-  };
+    if (redGhostPosition != null && pacman != null) {
+      int targetX = pacman.x; // Pac-Man's target position (grid coordinates)
+      int targetY = pacman.y;
 
-  ArrayList<PVector> validMoves = new ArrayList<>();
+      // Check if Blinky is at an intersection or dead end
+      PVector[] possibleMoves = getValidMoves(redGhostPosition);
+      if (possibleMoves.length > 2 || possibleMoves.length == 1) {
+        // Make a decision at an intersection or dead end
+        PVector bestMove = null;
+        float shortestDistance = Float.MAX_VALUE;
 
-  for (PVector move : moves) {
-    int moveX = (int) (position.x + move.x);
-    int moveY = (int) (position.y + move.y);
+        for (PVector move : possibleMoves) {
+          int moveX = (int) (redGhostPosition.x + move.x);
+          int moveY = (int) (redGhostPosition.y + move.y);
 
-    if (moveX >= 0 && moveX < cols && moveY >= 0 && moveY < rows && maze[moveY][moveX] != '│' && maze[moveY][moveX] != '─' && maze[moveY][moveX] != '┘' && maze[moveY][moveX] != '└' && maze[moveY][moveX] != '┌' && maze[moveY][moveX] !='┐'){
-      validMoves.add(move);
+          // Avoid reversing direction unless necessary
+          if (redGhostDirection != null && move.x == -redGhostDirection.x && move.y == -redGhostDirection.y) {
+            continue;
+          }
+
+          // Calculate distance to Pac-Man
+          float distance = dist(moveX, moveY, targetX, targetY);
+          if (distance < shortestDistance) {
+            shortestDistance = distance;
+            bestMove = move;
+          }
+        }
+
+        // Update direction and position if a valid move is found
+        if (bestMove != null) {
+          redGhostDirection = bestMove; // Update direction
+          redGhostPosition.add(bestMove); // Move ghost
+        }
+      } else if (possibleMoves.length == 2) {
+        // Continue in current direction if not at an intersection
+        redGhostPosition.add(redGhostDirection);
+      }
     }
   }
 
-  return validMoves.toArray(new PVector[0]);
-}
+  // Helper: Get all valid moves from the current position
+  PVector[] getValidMoves(PVector position) {
+    PVector[] moves = {
+      new PVector(0, -1), // Up
+      new PVector(0, 1), // Down
+      new PVector(-1, 0), // Left
+      new PVector(1, 0)   // Right
+    };
+
+    ArrayList<PVector> validMoves = new ArrayList<>();
+
+    for (PVector move : moves) {
+      int moveX = (int) (position.x + move.x);
+      int moveY = (int) (position.y + move.y);
+
+      if (moveX >= 0 && moveX < cols && moveY >= 0 && moveY < rows && maze[moveY][moveX] != '│' && maze[moveY][moveX] != '─' && maze[moveY][moveX] != '┘' && maze[moveY][moveX] != '└' && maze[moveY][moveX] != '┌' && maze[moveY][moveX] !='┐') {
+        validMoves.add(move);
+      }
+    }
+
+    return validMoves.toArray(new PVector[0]);
+  }
 
 
   // Draw a ghost at a specific position

@@ -1,4 +1,8 @@
+import java.util.PriorityQueue;
+import java.util.Comparator;
+import java.util.HashSet;
 class Game {
+  //import java.util.PriorityQueue;
   char[][] maze; // 2D array to store the maze layout
   int cols, rows; // Number of columns and rows in the maze
   int cellSize = 20; // Size of each cell in pixels
@@ -207,56 +211,6 @@ class Game {
   }
 
   //ghosts
-  int ghostSpeed = 4; // Adjust this to control speed
-  int ghostMoveCounter = 0; // Counter to slow down ghost movement
-  PVector redGhostDirection = new PVector(0, 0); // Current movement direction
-
-  void moveRedGhost() {
-    ghostMoveCounter++;
-    if (ghostMoveCounter % ghostSpeed != 0) {
-      return; // Skip movement update to control speed
-    }
-
-    if (redGhostPosition != null && pacman != null) {
-      int targetX = pacman.x; // Pac-Man's target position (grid coordinates)
-      int targetY = pacman.y;
-
-      // Check if Blinky is at an intersection or dead end
-      PVector[] possibleMoves = getValidMoves(redGhostPosition);
-      if (possibleMoves.length > 2 || possibleMoves.length == 1) {
-        // Make a decision at an intersection or dead end
-        PVector bestMove = null;
-        float shortestDistance = Float.MAX_VALUE;
-
-        for (PVector move : possibleMoves) {
-          int moveX = (int) (redGhostPosition.x + move.x);
-          int moveY = (int) (redGhostPosition.y + move.y);
-
-          // Avoid reversing direction unless necessary
-          if (redGhostDirection != null && move.x == -redGhostDirection.x && move.y == -redGhostDirection.y) {
-            continue;
-          }
-
-          // Calculate distance to Pac-Man
-          float distance = dist(moveX, moveY, targetX, targetY);
-          if (distance < shortestDistance) {
-            shortestDistance = distance;
-            bestMove = move;
-          }
-        }
-
-        // Update direction and position if a valid move is found
-        if (bestMove != null) {
-          redGhostDirection = bestMove; // Update direction
-          redGhostPosition.add(bestMove); // Move ghost
-        }
-      } else if (possibleMoves.length == 2) {
-        // Continue in current direction if not at an intersection
-        redGhostPosition.add(redGhostDirection);
-      }
-    }
-  }
-
   // Helper: Get all valid moves from the current position
   PVector[] getValidMoves(PVector position) {
     PVector[] moves = {
@@ -272,13 +226,99 @@ class Game {
       int moveX = (int) (position.x + move.x);
       int moveY = (int) (position.y + move.y);
 
-      if (moveX >= 0 && moveX < cols && moveY >= 0 && moveY < rows && maze[moveY][moveX] != '│' && maze[moveY][moveX] != '─' && maze[moveY][moveX] != '┘' && maze[moveY][moveX] != '└' && maze[moveY][moveX] != '┌' && maze[moveY][moveX] !='┐') {
+      // Check maze boundaries and wall collisions
+      if (moveX >= 0 && moveX < cols &&
+        moveY >= 0 && moveY < rows &&
+        maze[moveY][moveX] != '│' &&
+        maze[moveY][moveX] != '─' &&
+        maze[moveY][moveX] != '┘' &&
+        maze[moveY][moveX] != '└' &&
+        maze[moveY][moveX] != '┌' &&
+        maze[moveY][moveX] != '┐') {
         validMoves.add(move);
       }
     }
 
     return validMoves.toArray(new PVector[0]);
   }
+  class Node {
+    PVector position;
+    float gCost; // Cost from start
+    float hCost; // Heuristic cost to goal (Pac-Man)
+    float fCost; // Total cost (g + h)
+    Node parent; // For path reconstruction
+
+    Node(PVector position, float gCost, float hCost, Node parent) {
+      this.position = position;
+      this.gCost = gCost;
+      this.hCost = hCost;
+      this.fCost = gCost + hCost;
+      this.parent = parent;
+    }
+  }
+
+  int ghostMoveCounter = 0;
+  int ghostSpeed = 2;
+  PVector redGhostDirection = new PVector(0, 0); // Declare this at the start of the moveRedGhost() method
+
+  void moveRedGhost() {
+    ghostMoveCounter++;
+    if (ghostMoveCounter % ghostSpeed != 0) {
+      return;
+    }
+
+    if (redGhostPosition != null && pacman != null) {
+      int targetX = pacman.x;
+      int targetY = pacman.y;
+
+      // A* pathfinding setup
+      //PriorityQueue<Node> openList = new PriorityQueue<>(Comparator.comparingFloat(n -> n.fCost));
+      PriorityQueue<Node> openList = new PriorityQueue<Node>(new Comparator<Node>() {
+        @Override
+          public int compare(Node n1, Node n2) {
+          return Float.compare(n1.fCost, n2.fCost);
+        }
+      }
+      );
+
+      HashSet<PVector> closedList = new HashSet<>();
+
+      openList.add(new Node(redGhostPosition, 0, dist(redGhostPosition.x, redGhostPosition.y, targetX, targetY), null));
+
+      while (!openList.isEmpty()) {
+        Node currentNode = openList.poll();
+        PVector currentPos = currentNode.position;
+
+        if (currentPos.x == targetX && currentPos.y == targetY) {
+          // Path found, reconstruct the path and move the ghost
+          Node pathNode = currentNode;
+          while (pathNode != null) {
+            //PVector redGhostDirection = new PVector(0, 0); // Declare this at the start of the moveRedGhost() method
+
+            redGhostDirection = pathNode.position.copy().sub(redGhostPosition); // Move in the direction of the last node
+            redGhostPosition.set(pathNode.position); // Update position
+            pathNode = pathNode.parent;
+          }
+          return;
+        }
+
+        closedList.add(currentPos);
+
+        for (PVector move : getValidMoves(currentPos)) {
+          if (closedList.contains(move)) continue;
+
+          float gCost = currentNode.gCost + 1; // Assume uniform cost for each move
+          float hCost = dist(move.x, move.y, targetX, targetY);
+          Node neighborNode = new Node(move, gCost, hCost, currentNode);
+
+          if (!openList.contains(neighborNode) || gCost < neighborNode.gCost) {
+            openList.add(neighborNode);
+          }
+        }
+      }
+    }
+  }
+
 
 
   // Draw a ghost at a specific position

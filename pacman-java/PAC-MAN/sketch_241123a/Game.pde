@@ -1,6 +1,4 @@
-import java.util.PriorityQueue;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 class Game {
   //import java.util.PriorityQueue;
   char[][] maze; // 2D array to store the maze layout
@@ -211,29 +209,86 @@ class Game {
   }
 
   //ghosts
+  //ghosts
 
   int ghostMoveCounter = 0;
-  int ghostSpeed = 2;
-  PVector redGhostDirection = new PVector(0, 0); // Declare this at the start of the moveRedGhost() method
-
-  Pathfinder pathfinder = new Pathfinder(maze, cols, rows);
+  float ghostSpeed = 7;
+  PVector redGhostDirection = new PVector(0, 0);
 
   void moveRedGhost() {
     ghostMoveCounter++;
     if (ghostMoveCounter % ghostSpeed != 0) {
-      return;
+      return; // Control the speed (skip frames based on ghostSpeed)
     }
 
     if (redGhostPosition != null && pacman != null) {
-      List<PVector> path = pathfinder.findPath(redGhostPosition, new PVector(pacman.x, pacman.y));
+      List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
 
       if (!path.isEmpty() && path.size() > 1) {
-        // Update direction and move the ghost
-        redGhostDirection = path.get(1).copy().sub(redGhostPosition);
-        redGhostPosition.set(path.get(1));
+        // Move the ghost step by step along the grid
+        PVector target = path.get(1);
+        PVector moveVector = target.copy().sub(redGhostPosition);
+
+        // Normalize the movement and ensure the ghost moves step by step on the grid
+        redGhostPosition.add(moveVector.normalize()); // Move one step towards the target
       }
     }
   }
+  List<PVector> bfs(PVector start, PVector goal) {
+    // Initialize BFS structures
+    Queue<PVector> queue = new LinkedList<>();
+    Map<PVector, PVector> parentMap = new HashMap<>(); // To reconstruct the path
+    Set<PVector> visited = new HashSet<>();
+    List<PVector> directions = Arrays.asList(
+      new PVector(0, -1), // Up
+      new PVector(0, 1), // Down
+      new PVector(-1, 0), // Left
+      new PVector(1, 0)   // Right
+      );
+
+    queue.offer(start);
+    visited.add(start);
+    parentMap.put(start, null); // No parent for the start position
+
+    while (!queue.isEmpty()) {
+      PVector current = queue.poll();
+
+      // If we reached the goal, reconstruct the path
+      if (current.equals(goal)) {
+        List<PVector> path = new ArrayList<>();
+        PVector step = goal;
+        while (step != null) {
+          path.add(step);
+          step = parentMap.get(step);
+        }
+        Collections.reverse(path); // Reverse the path to get it from start to goal
+        return path;
+      }
+
+      // Explore all neighboring cells
+      for (PVector direction : directions) {
+        PVector neighbor = new PVector(current.x + direction.x, current.y + direction.y);
+
+        // Check if neighbor is within bounds and not a wall
+        if (isValidPosition(neighbor) && !visited.contains(neighbor)) {
+          queue.offer(neighbor);
+          visited.add(neighbor);
+          parentMap.put(neighbor, current); // Track the parent to reconstruct the path
+        }
+      }
+    }
+
+    return new ArrayList<>(); // Return an empty list if no path is found
+  }
+
+  boolean isValidPosition(PVector pos) {
+    if (pos.x < 0 || pos.x >= cols || pos.y < 0 || pos.y >= rows) {
+      return false; // Out of bounds
+    }
+    char cell = maze[(int) pos.y][(int) pos.x];
+    return cell != '─' && cell != '│' && cell != '=' && cell != '┌' && cell != '┐' && cell != '└' && cell != '┘'; // Not a wall
+  }
+
 
 
   // Draw a ghost at a specific position

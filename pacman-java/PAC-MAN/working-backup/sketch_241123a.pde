@@ -45,6 +45,8 @@ void setup() {
 }
 
 void draw() {
+  //game;
+
   int currentTime = millis(); // Get the current time
 
   if (showHighScore) {

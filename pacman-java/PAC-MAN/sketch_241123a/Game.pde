@@ -215,23 +215,22 @@ class Game {
   char redGhostDirection;
 
   void moveRedGhost() {
-
     ghostMoveCounter++;
     if (ghostMoveCounter % ghostSpeed != 0) {
       return;
     }
 
     if (redGhostPosition != null && pacman != null) {
-      // Check if the ghost has reached Pacman or is close to it
-      if (redGhostPosition.dist(new PVector(pacman.x, pacman.y)) < ghostSpeed / 2.0) {
-        // Ghost is near or on Pacman, so begin following Pacman again
-        followPacman();
-      } else {
-        // Recalculate path towards Pacman
+      // Continuously check if the ghost is near Pacman
+      if (redGhostPosition.dist(new PVector(pacman.x, pacman.y)) > ghostSpeed / 10.0) {
+        // Recalculate the path towards Pacman
         List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
+
+        // Make sure there is a valid path to follow
         if (!path.isEmpty() && path.size() > 1) {
-          // Move towards the second point in the path (smooth movement)
           PVector target = path.get(1); // Next point in the path
+
+          // Calculate the direction vector
           PVector directionVec = target.copy().sub(redGhostPosition);
 
           // Normalize direction and scale by speed to control the movement speed
@@ -261,43 +260,12 @@ class Game {
           }
         }
       }
-      
     }
 
     // Update the ghost's animation based on its direction
     redGhost.direction = redGhostDirection; // Update direction (char)
     redGhost.update(maze); // Update animation frame
   }
-
-  void followPacman() {
-
-      // When the ghost reaches Pacman, continue following it by recalculating the path
-      List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
-
-      // If there's a valid path, continue to follow Pacman
-      if (!path.isEmpty() && path.size() > 1) {
-        PVector target = path.get(1); // Next point in the path
-
-        // Calculate the direction vector towards Pacman
-        PVector directionVec = target.copy().sub(redGhostPosition);
-
-        // Normalize and scale by speed
-        directionVec.normalize().mult(ghostSpeed / 10.0);
-
-        // Update ghost position
-        redGhostPosition.add(directionVec);
-
-        // If close enough to the target, stop at the target position
-        if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
-          redGhostPosition.set(target);
-        }
-      }
-    
-  }
-
-
-
-
 
 
   List<PVector> bfs(PVector start, PVector goal) {

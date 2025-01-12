@@ -37,29 +37,6 @@ class GhostSprites {
       currentFrame = (currentFrame + 1) % 2; // Toggle between 0 and 1
       frameCounter = 0;
     }
-
-    // Move the ghost (random movement for now)
-    moveRandomly(maze);
-  }
-
-  // Random movement logic (replace with pathfinding for smarter behavior)
-  void moveRandomly(char[][] maze) {
-    int[][] directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}}; // U, D, L, R
-    char[] dirChars = {'U', 'D', 'L', 'R'};
-    int index = int(random(4)); // Choose a random direction
-    int newX = int(position.x) + directions[index][0];
-    int newY = int(position.y) + directions[index][1];
-
-    // Check if the new position is walkable
-    if (isWalkable(newX, newY, maze)) {
-      position.set(newX, newY);
-      direction = dirChars[index]; // Update direction
-    }
-  }
-
-  // Check if a cell is walkable
-  boolean isWalkable(int x, int y, char[][] maze) {
-    return x >= 0 && y >= 0 && x < maze[0].length && y < maze.length && maze[y][x] != '#';
   }
 
   // Draw the ghost at its current position
@@ -75,7 +52,7 @@ class GhostSprites {
   }
 
   // Helper method to map direction character to index
-  private int directionToIndex(char direction) {
+  public int directionToIndex(char direction) {
     if (direction == 'U') return 0;
     if (direction == 'D') return 1;
     if (direction == 'L') return 2;

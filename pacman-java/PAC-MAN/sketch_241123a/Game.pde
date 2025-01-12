@@ -209,31 +209,97 @@ class Game {
   }
 
   //ghosts
-  //ghosts
-
   int ghostMoveCounter = 0;
   float ghostSpeed = 7;
-  PVector redGhostDirection = new PVector(0, 0);
+  //PVector redGhostDirection = new PVector(0, 0);
+  char redGhostDirection;
 
   void moveRedGhost() {
+
     ghostMoveCounter++;
     if (ghostMoveCounter % ghostSpeed != 0) {
-      return; // Control the speed (skip frames based on ghostSpeed)
+      return;
     }
 
     if (redGhostPosition != null && pacman != null) {
+      // Check if the ghost has reached Pacman or is close to it
+      if (redGhostPosition.dist(new PVector(pacman.x, pacman.y)) < ghostSpeed / 2.0) {
+        // Ghost is near or on Pacman, so begin following Pacman again
+        followPacman();
+      } else {
+        // Recalculate path towards Pacman
+        List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
+        if (!path.isEmpty() && path.size() > 1) {
+          // Move towards the second point in the path (smooth movement)
+          PVector target = path.get(1); // Next point in the path
+          PVector directionVec = target.copy().sub(redGhostPosition);
+
+          // Normalize direction and scale by speed to control the movement speed
+          directionVec.normalize().mult(ghostSpeed / 10.0); // Adjust 10.0 for smoothness
+
+          // Determine the direction the ghost is moving
+          if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
+            if (directionVec.x > 0) {
+              redGhostDirection = 'R'; // Moving Right
+            } else {
+              redGhostDirection = 'L'; // Moving Left
+            }
+          } else {
+            if (directionVec.y > 0) {
+              redGhostDirection = 'D'; // Moving Down
+            } else {
+              redGhostDirection = 'U'; // Moving Up
+            }
+          }
+
+          // Update position
+          redGhostPosition.add(directionVec);
+
+          // If close enough to the target, stop at the target position
+          if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
+            redGhostPosition.set(target);
+          }
+        }
+      }
+      
+    }
+
+    // Update the ghost's animation based on its direction
+    redGhost.direction = redGhostDirection; // Update direction (char)
+    redGhost.update(maze); // Update animation frame
+  }
+
+  void followPacman() {
+
+      // When the ghost reaches Pacman, continue following it by recalculating the path
       List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
 
+      // If there's a valid path, continue to follow Pacman
       if (!path.isEmpty() && path.size() > 1) {
-        // Move the ghost step by step along the grid
-        PVector target = path.get(1);
-        PVector moveVector = target.copy().sub(redGhostPosition);
+        PVector target = path.get(1); // Next point in the path
 
-        // Normalize the movement and ensure the ghost moves step by step on the grid
-        redGhostPosition.add(moveVector.normalize()); // Move one step towards the target
+        // Calculate the direction vector towards Pacman
+        PVector directionVec = target.copy().sub(redGhostPosition);
+
+        // Normalize and scale by speed
+        directionVec.normalize().mult(ghostSpeed / 10.0);
+
+        // Update ghost position
+        redGhostPosition.add(directionVec);
+
+        // If close enough to the target, stop at the target position
+        if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
+          redGhostPosition.set(target);
+        }
       }
-    }
+    
   }
+
+
+
+
+
+
   List<PVector> bfs(PVector start, PVector goal) {
     // Initialize BFS structures
     Queue<PVector> queue = new LinkedList<>();

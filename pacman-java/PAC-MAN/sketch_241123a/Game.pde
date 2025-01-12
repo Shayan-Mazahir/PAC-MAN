@@ -211,55 +211,12 @@ class Game {
   }
 
   //ghosts
-  // Helper: Get all valid moves from the current position
-  PVector[] getValidMoves(PVector position) {
-    PVector[] moves = {
-      new PVector(0, -1), // Up
-      new PVector(0, 1), // Down
-      new PVector(-1, 0), // Left
-      new PVector(1, 0)   // Right
-    };
-
-    ArrayList<PVector> validMoves = new ArrayList<>();
-
-    for (PVector move : moves) {
-      int moveX = (int) (position.x + move.x);
-      int moveY = (int) (position.y + move.y);
-
-      // Check maze boundaries and wall collisions
-      if (moveX >= 0 && moveX < cols &&
-        moveY >= 0 && moveY < rows &&
-        maze[moveY][moveX] != '│' &&
-        maze[moveY][moveX] != '─' &&
-        maze[moveY][moveX] != '┘' &&
-        maze[moveY][moveX] != '└' &&
-        maze[moveY][moveX] != '┌' &&
-        maze[moveY][moveX] != '┐') {
-        validMoves.add(move);
-      }
-    }
-
-    return validMoves.toArray(new PVector[0]);
-  }
-  class Node {
-    PVector position;
-    float gCost; // Cost from start
-    float hCost; // Heuristic cost to goal (Pac-Man)
-    float fCost; // Total cost (g + h)
-    Node parent; // For path reconstruction
-
-    Node(PVector position, float gCost, float hCost, Node parent) {
-      this.position = position;
-      this.gCost = gCost;
-      this.hCost = hCost;
-      this.fCost = gCost + hCost;
-      this.parent = parent;
-    }
-  }
 
   int ghostMoveCounter = 0;
   int ghostSpeed = 2;
   PVector redGhostDirection = new PVector(0, 0); // Declare this at the start of the moveRedGhost() method
+
+  Pathfinder pathfinder = new Pathfinder(maze, cols, rows);
 
   void moveRedGhost() {
     ghostMoveCounter++;
@@ -268,57 +225,15 @@ class Game {
     }
 
     if (redGhostPosition != null && pacman != null) {
-      int targetX = pacman.x;
-      int targetY = pacman.y;
+      List<PVector> path = pathfinder.findPath(redGhostPosition, new PVector(pacman.x, pacman.y));
 
-      // A* pathfinding setup
-      //PriorityQueue<Node> openList = new PriorityQueue<>(Comparator.comparingFloat(n -> n.fCost));
-      PriorityQueue<Node> openList = new PriorityQueue<Node>(new Comparator<Node>() {
-        @Override
-          public int compare(Node n1, Node n2) {
-          return Float.compare(n1.fCost, n2.fCost);
-        }
-      }
-      );
-
-      HashSet<PVector> closedList = new HashSet<>();
-
-      openList.add(new Node(redGhostPosition, 0, dist(redGhostPosition.x, redGhostPosition.y, targetX, targetY), null));
-
-      while (!openList.isEmpty()) {
-        Node currentNode = openList.poll();
-        PVector currentPos = currentNode.position;
-
-        if (currentPos.x == targetX && currentPos.y == targetY) {
-          // Path found, reconstruct the path and move the ghost
-          Node pathNode = currentNode;
-          while (pathNode != null) {
-            //PVector redGhostDirection = new PVector(0, 0); // Declare this at the start of the moveRedGhost() method
-
-            redGhostDirection = pathNode.position.copy().sub(redGhostPosition); // Move in the direction of the last node
-            redGhostPosition.set(pathNode.position); // Update position
-            pathNode = pathNode.parent;
-          }
-          return;
-        }
-
-        closedList.add(currentPos);
-
-        for (PVector move : getValidMoves(currentPos)) {
-          if (closedList.contains(move)) continue;
-
-          float gCost = currentNode.gCost + 1; // Assume uniform cost for each move
-          float hCost = dist(move.x, move.y, targetX, targetY);
-          Node neighborNode = new Node(move, gCost, hCost, currentNode);
-
-          if (!openList.contains(neighborNode) || gCost < neighborNode.gCost) {
-            openList.add(neighborNode);
-          }
-        }
+      if (!path.isEmpty() && path.size() > 1) {
+        // Update direction and move the ghost
+        redGhostDirection = path.get(1).copy().sub(redGhostPosition);
+        redGhostPosition.set(path.get(1));
       }
     }
   }
-
 
 
   // Draw a ghost at a specific position

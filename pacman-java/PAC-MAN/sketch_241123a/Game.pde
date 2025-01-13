@@ -214,170 +214,161 @@ class Game {
   //PVector redGhostDirection = new PVector(0, 0);
   char redGhostDirection;
 
-  void moveRedGhost() {
+void moveRedGhost() {
     ghostMoveCounter++;
     if (ghostMoveCounter % ghostSpeed != 0) {
-      return;
+        return;
     }
-
+    
     if (redGhostPosition != null && pacman != null) {
-      // Continuously check if the ghost is near Pacman
-      if (redGhostPosition.dist(new PVector(pacman.x, pacman.y)) > ghostSpeed / 10.0) {
-        // Recalculate the path towards Pacman
-        List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
-
+        // Get current pacman position
+        PVector pacmanPos = new PVector(pacman.x, pacman.y);
+        
+        // Always recalculate the path to current Pacman position
+        List<PVector> path = bfs(redGhostPosition, pacmanPos);
+        
         // Make sure there is a valid path to follow
         if (!path.isEmpty() && path.size() > 1) {
-          PVector target = path.get(1); // Next point in the path
-
-          // Calculate the direction vector
-          PVector directionVec = target.copy().sub(redGhostPosition);
-
-          // Normalize direction and scale by speed to control the movement speed
-          directionVec.normalize().mult(ghostSpeed / 10.0); // Adjust 10.0 for smoothness
-
-          // Determine the direction the ghost is moving
-          if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
-            if (directionVec.x > 0) {
-              redGhostDirection = 'R'; // Moving Right
+            PVector target = path.get(1); // Next point in the path
+            
+            // Calculate the direction vector
+            PVector directionVec = PVector.sub(target, redGhostPosition);
+            
+            // Normalize direction and scale by speed
+            directionVec.normalize().mult(ghostSpeed / 10.0);
+            
+            // Update direction character based on movement
+            if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
+                redGhostDirection = (directionVec.x > 0) ? 'R' : 'L';
             } else {
-              redGhostDirection = 'L'; // Moving Left
+                redGhostDirection = (directionVec.y > 0) ? 'D' : 'U';
             }
-          } else {
-            if (directionVec.y > 0) {
-              redGhostDirection = 'D'; // Moving Down
-            } else {
-              redGhostDirection = 'U'; // Moving Up
+            
+            // Update position
+            redGhostPosition.add(directionVec);
+            
+            // Snap to grid if very close to target
+            if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
+                redGhostPosition.set(target);
             }
-          }
-
-          // Update position
-          redGhostPosition.add(directionVec);
-
-          // If close enough to the target, stop at the target position
-          if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
-            redGhostPosition.set(target);
-          }
+            
+            // Update the ghost's animation
+            redGhost.direction = redGhostDirection;
+            redGhost.update(maze);
         }
+    }
+}
+
+List<PVector> bfs(PVector start, PVector goal) {
+  // Initialize BFS structures
+  Queue<PVector> queue = new LinkedList<>();
+  Map<PVector, PVector> parentMap = new HashMap<>(); // To reconstruct the path
+  Set<PVector> visited = new HashSet<>();
+  List<PVector> directions = Arrays.asList(
+    new PVector(0, -1), // Up
+    new PVector(0, 1), // Down
+    new PVector(-1, 0), // Left
+    new PVector(1, 0)   // Right
+    );
+
+  queue.offer(start);
+  visited.add(start);
+  parentMap.put(start, null); // No parent for the start position
+
+  while (!queue.isEmpty()) {
+    PVector current = queue.poll();
+
+    // If we reached the goal, reconstruct the path
+    if (current.equals(goal)) {
+      List<PVector> path = new ArrayList<>();
+      PVector step = goal;
+      while (step != null) {
+        path.add(step);
+        step = parentMap.get(step);
+      }
+      Collections.reverse(path); // Reverse the path to get it from start to goal
+      return path;
+    }
+
+    // Explore all neighboring cells
+    for (PVector direction : directions) {
+      PVector neighbor = new PVector(current.x + direction.x, current.y + direction.y);
+
+      // Check if neighbor is within bounds and not a wall
+      if (isValidPosition(neighbor) && !visited.contains(neighbor)) {
+        queue.offer(neighbor);
+        visited.add(neighbor);
+        parentMap.put(neighbor, current); // Track the parent to reconstruct the path
       }
     }
-
-    // Update the ghost's animation based on its direction
-    redGhost.direction = redGhostDirection; // Update direction (char)
-    redGhost.update(maze); // Update animation frame
   }
 
+  return new ArrayList<>(); // Return an empty list if no path is found
+}
 
-  List<PVector> bfs(PVector start, PVector goal) {
-    // Initialize BFS structures
-    Queue<PVector> queue = new LinkedList<>();
-    Map<PVector, PVector> parentMap = new HashMap<>(); // To reconstruct the path
-    Set<PVector> visited = new HashSet<>();
-    List<PVector> directions = Arrays.asList(
-      new PVector(0, -1), // Up
-      new PVector(0, 1), // Down
-      new PVector(-1, 0), // Left
-      new PVector(1, 0)   // Right
-      );
-
-    queue.offer(start);
-    visited.add(start);
-    parentMap.put(start, null); // No parent for the start position
-
-    while (!queue.isEmpty()) {
-      PVector current = queue.poll();
-
-      // If we reached the goal, reconstruct the path
-      if (current.equals(goal)) {
-        List<PVector> path = new ArrayList<>();
-        PVector step = goal;
-        while (step != null) {
-          path.add(step);
-          step = parentMap.get(step);
-        }
-        Collections.reverse(path); // Reverse the path to get it from start to goal
-        return path;
-      }
-
-      // Explore all neighboring cells
-      for (PVector direction : directions) {
-        PVector neighbor = new PVector(current.x + direction.x, current.y + direction.y);
-
-        // Check if neighbor is within bounds and not a wall
-        if (isValidPosition(neighbor) && !visited.contains(neighbor)) {
-          queue.offer(neighbor);
-          visited.add(neighbor);
-          parentMap.put(neighbor, current); // Track the parent to reconstruct the path
-        }
-      }
-    }
-
-    return new ArrayList<>(); // Return an empty list if no path is found
+boolean isValidPosition(PVector pos) {
+  if (pos.x < 0 || pos.x >= cols || pos.y < 0 || pos.y >= rows) {
+    return false; // Out of bounds
   }
+  char cell = maze[(int) pos.y][(int) pos.x];
+  return cell != '─' && cell != '│' && cell != '=' && cell != '┌' && cell != '┐' && cell != '└' && cell != '┘'; // Not a wall
+}
 
-  boolean isValidPosition(PVector pos) {
-    if (pos.x < 0 || pos.x >= cols || pos.y < 0 || pos.y >= rows) {
-      return false; // Out of bounds
-    }
-    char cell = maze[(int) pos.y][(int) pos.x];
-    return cell != '─' && cell != '│' && cell != '=' && cell != '┌' && cell != '┐' && cell != '└' && cell != '┘'; // Not a wall
+
+
+// Draw a ghost at a specific position
+void drawGhost(float x, float y, char direction, int animationFrame, GhostSprites ghost) {
+  image(ghost.getSprite(direction, animationFrame), x, y, cellSize, cellSize);
+}
+
+// Update ghost animations
+void updateGhostAnimation() {
+  frameCounter++;
+  if (frameCounter >= animationSpeed) {
+    frameCounter = 0;
+    currentFrame = (currentFrame + 1) % 2; // Toggle between frames
   }
+}
 
-
-
-  // Draw a ghost at a specific position
-  void drawGhost(float x, float y, char direction, int animationFrame, GhostSprites ghost) {
-    image(ghost.getSprite(direction, animationFrame), x, y, cellSize, cellSize);
+// Draw ghosts at their respective positions
+void drawGhosts() {
+  if (blueGhostPosition != null) {
+    drawGhost(xOffset + blueGhostPosition.x * cellSize, yOffset + blueGhostPosition.y * cellSize, 'D', currentFrame, blueGhost);
   }
-
-  // Update ghost animations
-  void updateGhostAnimation() {
-    frameCounter++;
-    if (frameCounter >= animationSpeed) {
-      frameCounter = 0;
-      currentFrame = (currentFrame + 1) % 2; // Toggle between frames
-    }
+  if (redGhostPosition != null) {
+    drawGhost(xOffset + redGhostPosition.x * cellSize, yOffset + redGhostPosition.y * cellSize, 'D', currentFrame, redGhost);
   }
-
-  // Draw ghosts at their respective positions
-  void drawGhosts() {
-    if (blueGhostPosition != null) {
-      drawGhost(xOffset + blueGhostPosition.x * cellSize, yOffset + blueGhostPosition.y * cellSize, 'D', currentFrame, blueGhost);
-    }
-    if (redGhostPosition != null) {
-      drawGhost(xOffset + redGhostPosition.x * cellSize, yOffset + redGhostPosition.y * cellSize, 'D', currentFrame, redGhost);
-    }
-    if (pinkGhostPosition != null) {
-      drawGhost(xOffset + pinkGhostPosition.x * cellSize, yOffset + pinkGhostPosition.y * cellSize, 'D', currentFrame, pinkGhost);
-    }
-    if (orangeGhostPosition != null) {
-      drawGhost(xOffset + orangeGhostPosition.x * cellSize, yOffset + orangeGhostPosition.y * cellSize, 'D', currentFrame, orangeGhost);
-    }
+  if (pinkGhostPosition != null) {
+    drawGhost(xOffset + pinkGhostPosition.x * cellSize, yOffset + pinkGhostPosition.y * cellSize, 'D', currentFrame, pinkGhost);
   }
+  if (orangeGhostPosition != null) {
+    drawGhost(xOffset + orangeGhostPosition.x * cellSize, yOffset + orangeGhostPosition.y * cellSize, 'D', currentFrame, orangeGhost);
+  }
+}
 
-  void update() {
+void update() {
 
-    if (showReadyScreen) {
-      displayReadyScreen();
-      if (millis() - readyStartTime > readyScreenDuration) {
-        showReadyScreen = false; // Transition to game after delay
-      }
-    } else {
-
-      background(0);
-      pacman.move(maze);
-      currentScore = pacman.score;
-      currentScore = pacman.score;      // Synchronize the score
-      display();
-      pacman.draw(cellSize, xOffset, yOffset);
-      moveRedGhost(); // Move the red ghost
-      updateGhostAnimation();
-      //drawGhosts();
-      drawGhosts();
+  if (showReadyScreen) {
+    displayReadyScreen();
+    if (millis() - readyStartTime > readyScreenDuration) {
+      showReadyScreen = false; // Transition to game after delay
     }
-  }
+  } else {
 
-  void keyPressed() {
-    pacman.handleInput();
+    background(0);
+    pacman.move(maze);
+    currentScore = pacman.score;
+    currentScore = pacman.score;      // Synchronize the score
+    display();
+    pacman.draw(cellSize, xOffset, yOffset);
+    moveRedGhost(); // Move the red ghost
+    updateGhostAnimation();
+    //drawGhosts();
+    drawGhosts();
   }
+}
+
+void keyPressed() {
+  pacman.handleInput();
+}
 }

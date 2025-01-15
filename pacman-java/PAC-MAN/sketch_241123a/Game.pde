@@ -410,7 +410,7 @@ class Game {
 
       background(0);
       pacman.move(maze);
-      currentScore = pacman.score;
+      //currentScore = pacman.score;
       currentScore = pacman.score;      // Synchronize the score
       display();
       pacman.draw(cellSize, xOffset, yOffset);

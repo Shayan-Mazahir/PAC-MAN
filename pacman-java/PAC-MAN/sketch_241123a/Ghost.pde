@@ -1,3 +1,7 @@
+/* 
+Author: Shayan Mazahir
+Date of Last Edit: January 17, 2025
+*/
 class GhostSprites {
   PImage[][] sprites; // [direction][frame] for animations
   String ghostColor; // The ghost's color (e.g., "blue", "red")

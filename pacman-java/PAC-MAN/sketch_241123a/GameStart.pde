@@ -1,3 +1,7 @@
+/* 
+Author: Shayan Mazahir
+Date of Last Edit: January 17, 2025
+*/
 //Using the module/library/package for GIF's as Processing doesn't support it by default
 import gifAnimation.Gif;
 

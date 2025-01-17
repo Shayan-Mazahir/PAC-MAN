@@ -1,3 +1,7 @@
+/* 
+Author: Shayan Mazahir
+Date of Last Edit: January 17, 2025
+*/
 class Movement {
   int x, y; // Current grid position
   char direction; // Current direction ('U', 'D', 'L', 'R')

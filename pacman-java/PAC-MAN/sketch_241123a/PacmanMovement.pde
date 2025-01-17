@@ -1,3 +1,7 @@
+/* 
+Author: Shayan Mazahir
+Date of Last Edit: January 17, 2025
+*/
 // PacmanMovement class extending Movement class
 class PacmanMovement extends Movement {
   float cellSize = 20.0f; // Size of the grid cell in pixels

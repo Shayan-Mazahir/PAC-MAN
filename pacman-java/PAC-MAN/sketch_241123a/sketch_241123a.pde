@@ -1,3 +1,7 @@
+/* 
+Author: Shayan Mazahir
+Date of Last Edit: January 17, 2025
+*/
 // Importing the gif package/module/library because Processing doesn't support gif by default
 import gifAnimation.Gif;
 

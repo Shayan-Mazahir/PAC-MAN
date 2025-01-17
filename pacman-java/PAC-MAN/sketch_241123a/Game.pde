@@ -1,3 +1,7 @@
+/* 
+Author: Shayan Mazahir
+Date of Last Edit: January 17, 2025
+*/
 //Had to import the java utility class manually as processing doesn't do it by default (used for the BFS search algorithm)
 import java.util.*;
 /* The main game class responsible for handling the game logic, rendering,

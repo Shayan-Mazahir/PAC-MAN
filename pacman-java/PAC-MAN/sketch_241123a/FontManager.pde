@@ -1,3 +1,8 @@
+/* 
+Author: Shayan Mazahir
+Date of Last Edit: January 17, 2025
+*/
+
 /**
  * FontManager class
  * This class manages loading and applying a custom font in a Processing sketch.

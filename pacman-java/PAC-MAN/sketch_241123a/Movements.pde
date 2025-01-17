@@ -2,6 +2,7 @@ class Movement {
   int x, y; // Current grid position
   char direction; // Current direction ('U', 'D', 'L', 'R')
 
+  //Movement function
   Movement(int startX, int startY) {
     this.x = startX;
     this.y = startY;

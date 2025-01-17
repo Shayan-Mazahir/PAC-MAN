@@ -16,6 +16,7 @@ class PacmanMovement extends Movement {
   int gameScore; // Reference to the game's score
 
 
+  //Function to control the movement of pacman + converts movement from grid based to pixel based 
   PacmanMovement(int startX, int startY, float speed, int score) {
     super(startX, startY);
     this.pixelX = startX * cellSize; // Convert grid to pixels (Pac-Man's center)

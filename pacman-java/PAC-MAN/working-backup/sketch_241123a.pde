@@ -1,4 +1,4 @@
-// Importing the gif package because Processing doesn't support gif by default
+// Importing the gif package/module/library because Processing doesn't support gif by default
 import gifAnimation.Gif;
 
 // Setting variables and objects up

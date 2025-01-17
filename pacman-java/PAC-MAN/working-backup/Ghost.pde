@@ -7,6 +7,7 @@ class GhostSprites {
   int animationSpeed; // Frames to wait before switching animation frames
   int frameCounter; // Counter for animation timing
 
+  //Function to load the sprite images (or just images in general)
   GhostSprites(String ghostColor) {
     this.ghostColor = ghostColor;
     sprites = new PImage[4][2]; // 4 directions, 2 frames each

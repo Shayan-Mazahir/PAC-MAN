@@ -1,6 +1,8 @@
+//Using the module/library/package for GIF's as Processing doesn't support it by default
 import gifAnimation.Gif;
 
 class GameStart {
+  //Declearing gloabal variables
   float x, y;
   Gif gifImage;
   PImage hoverImage;
@@ -10,6 +12,7 @@ class GameStart {
   // Constructor to initialize the button
   //why do we need the PApplet? whats the use?
   //https://processing.github.io/processing-javadocs/core/processing/core/PApplet.html
+  //Function to start the actual game
   GameStart(PApplet parent, String gifPath, String hoverImagePath) {
     // Load the GIF and hover image
     gifImage = new Gif(parent, gifPath);  // Pass parent to the Gif constructor

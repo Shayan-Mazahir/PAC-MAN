@@ -1,4 +1,7 @@
+//Had to import the java utility class manually as processing doesn't do it by default (used for the BFS search algorithm)
 import java.util.*;
+/* The main game class responsible for handling the game logic, rendering,
+ and interactions within the Pac-Man game. */
 class Game {
   //import java.util.PriorityQueue;
   char[][] maze; // 2D array to store the maze layout
@@ -30,6 +33,7 @@ class Game {
   int currentFrame = 0;
 
   FontManager fontManager;
+  //A processing thing, not sure why we need it, but program doesn't work without it
   PApplet app;
 
   // READY! screen variables
@@ -192,12 +196,14 @@ class Game {
     checkBackArrowClick();
   }
 
+  //Display the back arrow
   void displayBackArrow() {
     float backArrowX = 10;
     float backArrowY = 10;
     image(backArrow, backArrowX, backArrowY, 100, 50);
   }
 
+  //checks if the mouse is clicked within the bounds of the arrow image
   void checkBackArrowClick() {
     float backArrowX = 10, backArrowY = 10, backArrowWidth = 100, backArrowHeight = 50;
 
@@ -208,62 +214,67 @@ class Game {
     }
   }
 
-  //ghosts
+  //initializing the red ghost
   int ghostMoveCounter = 0;
   float ghostSpeed = 7;
   //PVector redGhostDirection = new PVector(0, 0);
   char redGhostDirection;
 
-  //  void moveRedGhost() {
+  //backup for the backup for the moveRedGhost()
+  /*
+    void moveRedGhost() {
+   
+   ghostMoveCounter++;
+   if (ghostMoveCounter % ghostSpeed != 0) {
+   return;
+   }
+   
+   if (redGhostPosition != null && pacman != null) {
+   // Get current pacman position
+   PVector pacmanPos = new PVector(pacman.x, pacman.y);
+   
+   // Always recalculate the path to current Pacman position
+   List<PVector> path = bfs(redGhostPosition, pacmanPos);
+   
+   // Make sure there is a valid path to follow
+   if (!path.isEmpty() && path.size() > 1) {
+   PVector target = path.get(1); // Next point in the path
+   
+   // Calculate the direction vector
+   PVector directionVec = PVector.sub(target, redGhostPosition);
+   
+   // Normalize direction and scale by speed
+   directionVec.normalize().mult(ghostSpeed / 10.0);
+   
+   // Update direction character based on movement
+   if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
+   redGhostDirection = (directionVec.x > 0) ? 'R' : 'L';
+   } else {
+   redGhostDirection = (directionVec.y > 0) ? 'D' : 'U';
+   }
+   
+   // Update position
+   redGhostPosition.add(directionVec);
+   
+   // Snap to grid if very close to target
+   if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
+   redGhostPosition.set(target);
+   }
+   
+   // Update the ghost's animation
+   redGhost.direction = redGhostDirection;
+   redGhost.update(maze);
+   }
+   }
+   //moveRedGhost();
+   //int i = 0;
+   //while (i == 0) {
+   //  moveRedGhost();
+   //}
+   }
+   */
 
-  //    ghostMoveCounter++;
-  //    if (ghostMoveCounter % ghostSpeed != 0) {
-  //      return;
-  //    }
-
-  //    if (redGhostPosition != null && pacman != null) {
-  //      // Get current pacman position
-  //      PVector pacmanPos = new PVector(pacman.x, pacman.y);
-
-  //      // Always recalculate the path to current Pacman position
-  //      List<PVector> path = bfs(redGhostPosition, pacmanPos);
-
-  //      // Make sure there is a valid path to follow
-  //      if (!path.isEmpty() && path.size() > 1) {
-  //        PVector target = path.get(1); // Next point in the path
-
-  //        // Calculate the direction vector
-  //        PVector directionVec = PVector.sub(target, redGhostPosition);
-
-  //        // Normalize direction and scale by speed
-  //        directionVec.normalize().mult(ghostSpeed / 10.0);
-
-  //        // Update direction character based on movement
-  //        if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
-  //          redGhostDirection = (directionVec.x > 0) ? 'R' : 'L';
-  //        } else {
-  //          redGhostDirection = (directionVec.y > 0) ? 'D' : 'U';
-  //        }
-
-  //        // Update position
-  //        redGhostPosition.add(directionVec);
-
-  //        // Snap to grid if very close to target
-  //        if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
-  //          redGhostPosition.set(target);
-  //        }
-
-  //        // Update the ghost's animation
-  //        redGhost.direction = redGhostDirection;
-  //        redGhost.update(maze);
-  //      }
-  //    }
-  //    //moveRedGhost();
-  //    //int i = 0;
-  //    //while (i == 0) {
-  //    //  moveRedGhost();
-  //    //}
-  //  }
+  //Function to move the red ghost using an algorithm
   public void moveRedGhost() {
     ghostMoveCounter++;
     if (ghostMoveCounter % ghostSpeed != 0) {
@@ -312,6 +323,7 @@ class Game {
     }
   }
 
+  //BFS (Breadth First Search) algorithm with vectors to support the moveRedGhost() function
   List<PVector> bfs(PVector start, PVector goal) {
     // Initialize BFS structures
     Queue<PVector> queue = new LinkedList<>();
@@ -359,6 +371,7 @@ class Game {
     return new ArrayList<>(); // Return an empty list if no path is found
   }
 
+  //Checks for collisions
   boolean isValidPosition(PVector pos) {
     if (pos.x < 0 || pos.x >= cols || pos.y < 0 || pos.y >= rows) {
       return false; // Out of bounds
@@ -399,6 +412,7 @@ class Game {
     }
   }
 
+  //This function acts like a "secondary function" which will go inside the "mother loop"
   void update() {
 
     if (showReadyScreen) {

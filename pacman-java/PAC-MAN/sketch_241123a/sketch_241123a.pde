@@ -114,6 +114,8 @@ void draw() {
   } else {
     background(0);
     game.update(); // Update the game, which includes moving Pac-Man and displaying the maze
+    game.moveRedGhost();
+    //game.List<PVector> bfs();
   }
 }
 

@@ -264,7 +264,7 @@ class Game {
   //    //  moveRedGhost();
   //    //}
   //  }
-  void moveRedGhost() {
+  public void moveRedGhost() {
     ghostMoveCounter++;
     if (ghostMoveCounter % ghostSpeed != 0) {
       return;

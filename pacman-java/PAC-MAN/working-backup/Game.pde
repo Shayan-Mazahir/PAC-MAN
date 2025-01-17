@@ -214,91 +214,103 @@ class Game {
   //PVector redGhostDirection = new PVector(0, 0);
   char redGhostDirection;
 
-  void moveRedGhost() {
+  //  void moveRedGhost() {
 
+  //    ghostMoveCounter++;
+  //    if (ghostMoveCounter % ghostSpeed != 0) {
+  //      return;
+  //    }
+
+  //    if (redGhostPosition != null && pacman != null) {
+  //      // Get current pacman position
+  //      PVector pacmanPos = new PVector(pacman.x, pacman.y);
+
+  //      // Always recalculate the path to current Pacman position
+  //      List<PVector> path = bfs(redGhostPosition, pacmanPos);
+
+  //      // Make sure there is a valid path to follow
+  //      if (!path.isEmpty() && path.size() > 1) {
+  //        PVector target = path.get(1); // Next point in the path
+
+  //        // Calculate the direction vector
+  //        PVector directionVec = PVector.sub(target, redGhostPosition);
+
+  //        // Normalize direction and scale by speed
+  //        directionVec.normalize().mult(ghostSpeed / 10.0);
+
+  //        // Update direction character based on movement
+  //        if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
+  //          redGhostDirection = (directionVec.x > 0) ? 'R' : 'L';
+  //        } else {
+  //          redGhostDirection = (directionVec.y > 0) ? 'D' : 'U';
+  //        }
+
+  //        // Update position
+  //        redGhostPosition.add(directionVec);
+
+  //        // Snap to grid if very close to target
+  //        if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
+  //          redGhostPosition.set(target);
+  //        }
+
+  //        // Update the ghost's animation
+  //        redGhost.direction = redGhostDirection;
+  //        redGhost.update(maze);
+  //      }
+  //    }
+  //    //moveRedGhost();
+  //    //int i = 0;
+  //    //while (i == 0) {
+  //    //  moveRedGhost();
+  //    //}
+  //  }
+  public void moveRedGhost() {
     ghostMoveCounter++;
     if (ghostMoveCounter % ghostSpeed != 0) {
       return;
     }
 
     if (redGhostPosition != null && pacman != null) {
-      // Check if the ghost has reached Pacman or is close to it
-      if (redGhostPosition.dist(new PVector(pacman.x, pacman.y)) < ghostSpeed / 2.0) {
-        // Ghost is near or on Pacman, so begin following Pacman again
-        followPacman();
-      } else {
-        // Recalculate path towards Pacman
-        List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
-        if (!path.isEmpty() && path.size() > 1) {
-          // Move towards the second point in the path (smooth movement)
-          PVector target = path.get(1); // Next point in the path
-          PVector directionVec = target.copy().sub(redGhostPosition);
+      // Get current Pacman position
+      PVector pacmanPos = new PVector(pacman.x, pacman.y);
 
-          // Normalize direction and scale by speed to control the movement speed
-          directionVec.normalize().mult(ghostSpeed / 10.0); // Adjust 10.0 for smoothness
+      // Always recalculate the path to the current Pacman position
+      List<PVector> path = bfs(redGhostPosition, pacmanPos);
 
-          // Determine the direction the ghost is moving
-          if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
-            if (directionVec.x > 0) {
-              redGhostDirection = 'R'; // Moving Right
-            } else {
-              redGhostDirection = 'L'; // Moving Left
-            }
-          } else {
-            if (directionVec.y > 0) {
-              redGhostDirection = 'D'; // Moving Down
-            } else {
-              redGhostDirection = 'U'; // Moving Up
-            }
-          }
-
-          // Update position
-          redGhostPosition.add(directionVec);
-
-          // If close enough to the target, stop at the target position
-          if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
-            redGhostPosition.set(target);
-          }
-        }
-      }
-      
-    }
-
-    // Update the ghost's animation based on its direction
-    redGhost.direction = redGhostDirection; // Update direction (char)
-    redGhost.update(maze); // Update animation frame
-  }
-
-  void followPacman() {
-
-      // When the ghost reaches Pacman, continue following it by recalculating the path
-      List<PVector> path = bfs(redGhostPosition, new PVector(pacman.x, pacman.y));
-
-      // If there's a valid path, continue to follow Pacman
+      // Make sure there is a valid path to follow
       if (!path.isEmpty() && path.size() > 1) {
         PVector target = path.get(1); // Next point in the path
 
-        // Calculate the direction vector towards Pacman
-        PVector directionVec = target.copy().sub(redGhostPosition);
+        // Calculate the direction vector
+        PVector directionVec = PVector.sub(target, redGhostPosition);
 
-        // Normalize and scale by speed
+        // Normalize direction and scale by speed
         directionVec.normalize().mult(ghostSpeed / 10.0);
 
-        // Update ghost position
+        // Update direction character based on movement
+        if (Math.abs(directionVec.x) > Math.abs(directionVec.y)) {
+          redGhostDirection = (directionVec.x > 0) ? 'R' : 'L';
+        } else {
+          redGhostDirection = (directionVec.y > 0) ? 'D' : 'U';
+        }
+
+        // Update position
         redGhostPosition.add(directionVec);
 
-        // If close enough to the target, stop at the target position
+        // Snap to grid if very close to target
         if (redGhostPosition.dist(target) < ghostSpeed / 10.0) {
           redGhostPosition.set(target);
         }
+
+        // Update the ghost's animation
+        redGhost.direction = redGhostDirection;
+        redGhost.update(maze);
+
+        // Continue recursively
+        moveRedGhost();
       }
-    
+    }
   }
-
-
-
-
-
 
   List<PVector> bfs(PVector start, PVector goal) {
     // Initialize BFS structures
@@ -398,7 +410,7 @@ class Game {
 
       background(0);
       pacman.move(maze);
-      currentScore = pacman.score;
+      //currentScore = pacman.score;
       currentScore = pacman.score;      // Synchronize the score
       display();
       pacman.draw(cellSize, xOffset, yOffset);

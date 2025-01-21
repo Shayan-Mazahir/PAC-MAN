@@ -1,6 +1,6 @@
 /* 
 Author: Shayan Mazahir
-Date of Last Edit: January 17, 2025
+Date of Last Edit: January 21, 2025
 */
 //Had to import the java utility class manually as processing doesn't do it by default (used for the BFS search algorithm)
 import java.util.*;
@@ -92,6 +92,7 @@ class Game {
   }
 
   // Load the maze from a file
+  //Inspired from: https://stackoverflow.com/questions/622471/pacman-maze-in-java
   void loadMaze(String mazeFilePath) {
     String[] lines = loadStrings(mazeFilePath);
 

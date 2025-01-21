@@ -1,6 +1,6 @@
 /* 
 Author: Shayan Mazahir
-Date of Last Edit: January 17, 2025
+Date of Last Edit: January 21, 2025
 */
 //Using the module/library/package for GIF's as Processing doesn't support it by default
 import gifAnimation.Gif;
@@ -14,7 +14,6 @@ class GameStart {
   boolean clicked = false;
 
   // Constructor to initialize the button
-  //why do we need the PApplet? whats the use?
   //https://processing.github.io/processing-javadocs/core/processing/core/PApplet.html
   //Function to start the actual game
   GameStart(PApplet parent, String gifPath, String hoverImagePath) {

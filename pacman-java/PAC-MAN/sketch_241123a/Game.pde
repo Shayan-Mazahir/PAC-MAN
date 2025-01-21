@@ -12,10 +12,10 @@ class Game {
   int cols, rows; // Number of columns and rows in the maze
   int cellSize = 20; // Size of each cell in pixels
   PacmanMovement pacman; // Loading pacman class
-  PImage backArrow;
-  String mazeFile;
-  PacmanMovement score;
-  int currentScore;
+  PImage backArrow; //Load the back arrow image
+  String mazeFile; //Load the maze from the txt file
+  PacmanMovement score; //Initializing the class
+  int currentScore; //Counter for keeping score track
 
   // Ghosts
   GhostSprites blueGhost = new GhostSprites("blue");

@@ -1,5 +1,7 @@
 # PAC-MAN
 
+## Open for contributions! Feel free to fork, edit, and submit your improvements to this project. Your contributions are welcome!
+
 ## Overview
 This repository contains the code for my PAC-MAN game, a project I developed during my Grade 11 and 12 ISU (Independent Study Unit). It showcases my progress in game development using two different programming languages.
 

@@ -1,6 +1,6 @@
 /* 
 Author: Shayan Mazahir
-Date of Last Edit: January 17, 2025
+Date of Last Edit: July 11, 2025
 */
 // Importing the gif package/module/library because Processing doesn't support gif by default
 import gifAnimation.Gif;
@@ -21,7 +21,8 @@ int lastStateChangeTime = 0; // Track the last state change time
 int timeoutDuration = 2000;  // Timeout duration in milliseconds (2 seconds)
 
 void setup() {
-  size(680, 720);
+  //size(displayWidth, displayHeight);
+  fullScreen();
   background(0);
 
   // Load the start screen image

@@ -1,6 +1,6 @@
 /* 
 Author: Shayan Mazahir
-Date of Last Edit: January 21, 2025
+Date of Last Edit: July 11, 2025
 */
 //Had to import the java utility class manually as processing doesn't do it by default (used for the BFS search algorithm)
 import java.util.*;
@@ -85,7 +85,7 @@ class Game {
 
     // Calculate the offset to center the maze at the bottom
     xOffset = (width - cols * cellSize) / 2; // Horizontal centering
-    yOffset = height - rows * cellSize; // Vertical alignment at the bottom
+    yOffset = (height - rows * cellSize) / 2; // Vertical alignment at the bottom
 
     // Record the start time for the "READY!" screen
     readyStartTime = millis();

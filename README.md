@@ -9,7 +9,7 @@ This repository contains the code for my PAC-MAN game, a project I developed dur
 
 ### Languages
 - **Python**: The version created in Grade 11 is written in Python and can be found [here](https://github.com/Shayan-Mazahir/PAC-MAN/tree/main/pacman-python).  
-- **Java/Processing**: The version created in Grade 12 uses Java and Processing, and can be found [here](https://github.com/Shayan-Mazahir/PAC-MAN/tree/main/pacman-java). This version is actively being worked on.
+- **Java/Processing (Active)**: The version created in Grade 12 uses Java and Processing, and can be found [here](https://github.com/Shayan-Mazahir/PAC-MAN/tree/main/pacman-java).
 
 ### Current Status
 - **Java/Processing Version**: Currently under active development.
